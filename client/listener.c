@@ -76,7 +76,7 @@ void receivePlayerlist(PACKET packet){
 		game_setPlayerName(i + 1, packet.content.playerlist[i].playername);
 		game_setPlayerScore(i + 1, ntohl(packet.content.playerlist[i].score));
 		if ((clientID == userlist[i].id)) {
-			game_highlightPlayer(i + 1);
+			game_highlightPlayer(i+1);
 			infoPrint("clientID %i trifft zu, hebe Spielername hervor", clientID);
 		}
 	}
@@ -188,6 +188,11 @@ void *listener_main(int * sockD){
         preparation_setMode(PREPARATION_MODE_NORMAL);
     }
 
+
+
+
+
+
     // Empfangsschleife
 	int stop = 0;
 	while(stop == 0){
@@ -216,6 +221,8 @@ void *listener_main(int * sockD){
 				game_showWindow();
 				preparation_hideWindow();
 				break;
+
+			//case RFC_
 
 			case RFC_QUESTION:
 				infoPrint("Frage erhalten");
@@ -248,11 +255,23 @@ void *listener_main(int * sockD){
 				if (ntohs(packet.header.length) > 0) {
 					infoPrint("Korrekte Antwort: %i", packet.content.questionresult.correct);
 					infoPrint("Spieler Antowrt: %i", packet.content.questionresult.timeout);
+					uint8_t playerSelection = getAnswerSelection();
+					infoPrint("\n\n%d\n\n", playerSelection);
+					//infoPrint("\n\nPRIx8", playerSelection);
 					for (int i = 0; i < NUM_ANSWERS; i++) {
-						if (packet.content.questionresult.correct & (1 << i)) {
+						if (packet.content.questionresult.correct & (1 << i)) { // schiffte 1 um i nach links
+
 							game_markAnswerCorrect(i);
+							if(!(playerSelection & (1 << i))){
+								game_highlightMistake(i);
+							}
+
 						} else {
+
 							game_markAnswerWrong(i);
+							if((playerSelection & (1 << i))){ //playerSelection gibt bitweise zurück welche antworten angeklickt wurden
+								game_highlightMistake(i);
+							}
 						}
 					}
 

@@ -181,6 +181,10 @@ void *client_thread_main(int* client_id){
 					}
 					break;
 
+
+				case RFC_QUESTIONANSWERED:
+
+
 				// Spieler fordert Frage an
 				case RFC_QUESTIONREQUEST:
 					// lade naechste Frage

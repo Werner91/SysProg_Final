@@ -314,7 +314,7 @@ int main(int argc, char ** argv) {
 	signal(SIGINT, INThandler);
 
 	// gebe Gruppennamen aus
-	infoPrint("\n\nServer Gruppe Joos, Frick & Schwenk\n");
+	infoPrint("\n\nServer Gruppe 04 Stroh, Steinbinder, Strohm\n");
 
 	// Spielerverwaltung initialisieren
 	initSpielerverwaltung();

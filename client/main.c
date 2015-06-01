@@ -44,7 +44,7 @@ char *server = "localhost";
 // Standardserverport
 char *port = "8111";
 // Ausgewählte Antwort
-int selection = 0;
+uint8_t selection = 0;
 
 int establishConnection(int socketD_, char* port_, char* hostname_) {
 	int portno;
@@ -255,15 +255,20 @@ void preparation_onWindowClosed(void) {
     guiQuit();
 }
 
+uint8_t getAnswerSelection(){
+	return selection;
+}
+
 
 void game_onSubmitClicked(unsigned char selectedAnswers)
 {
 	infoPrint("Absende-Button angeklickt, Bitmaske der Antworten: %u",	(unsigned)selectedAnswers);
-	selection = selectedAnswers;
+	selection = (uint8_t) selectedAnswers;
 	PACKET packet;
 	packet.header.type = RFC_QUESTIONANSWERED;
 	packet.header.length = htons(sizeof(uint8_t));
-	packet.content.selection = (uint8_t) selection;
+	packet.content.selection = selection;
+
 	sendPacket(packet, socketDeskriptor);
 }
 

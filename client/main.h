@@ -27,6 +27,8 @@ void preparation_onStartClicked(const char *);
 
 void preparation_onWindowClosed(void);
 
+uint8_t getAnswerSelection();
+
 void game_onSubmitClicked(unsigned char);
 
 
