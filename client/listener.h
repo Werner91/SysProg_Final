@@ -19,7 +19,7 @@
 typedef struct {
 	int id;
 	char name[PLAYER_NAME_LENGTH];
-} USER;
+} SPIELER;
 
 
 void receivePlayerlist(PACKET);

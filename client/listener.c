@@ -38,17 +38,17 @@ bool game_is_running = false;
  */
 void receivePlayerlist(PACKET packet){
 
-	USER userlist[MAX_PLAYERS];
+	SPIELER userlist[MAX_PLAYERS];
 	int spielerzahl=0;
 
 	spielerzahl = ntohs(packet.header.length)/37; // 37 == Groesse PLAYERLIST 1 Spieler
 	infoPrint("Anzahl Spieler in der Playerlist: %i",spielerzahl);
 
-	// Playerlist leeren
+	// Playerlist leeren (GUI)
 	preparation_clearPlayers();
 
-	for (int i = 1; i <= MAX_PLAYERS; i++) {
-		game_setPlayerName(i, "");
+	for (int i = 1; i <= MAX_PLAYERS; i++) { // i = reihenfolge der Spieler
+		game_setPlayerName(i, ""); //Schreibt Namen in die GUI
 		game_setPlayerScore(i, 0);
 	}
 
