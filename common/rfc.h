@@ -16,9 +16,7 @@
 
 // maximale Anzahl an Spielern
 #define MAX_PLAYERS	4
-
-// RFC Version WS 14/15
-#define RFC_VERSION 6
+#define RFC_VERSION 7
 
 
 // Uebersicht über die Nachrichtentypen
