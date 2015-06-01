@@ -266,7 +266,7 @@ void *listener_main(int * sockD){
 						game_setStatusText("Richtige Antwort!");
 						game_setStatusIcon(1);
 					}
-					sem_post(&frage); //fragesemaphor aufrufen
+					sem_post(&sem_frage); //fragesemaphor aufrufen
 				}
 
 				break;

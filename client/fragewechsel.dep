@@ -1,0 +1,10 @@
+client/fragewechsel.o: client/fragewechsel.c client/fragewechsel.h \
+ client/../common/rfc.h common/question.h client/listener.h common/rfc.h \
+ common/util.h
+client/fragewechsel.c:
+client/fragewechsel.h:
+client/../common/rfc.h:
+common/question.h:
+client/listener.h:
+common/rfc.h:
+common/util.h:

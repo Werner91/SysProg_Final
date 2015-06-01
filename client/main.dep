@@ -1,0 +1,18 @@
+client/main.o: client/main.c common/util.h client/gui/gui_interface.h \
+ common/sockets.h common/networking.h common/sockets.h common/rfc.h \
+ common/question.h common/util.h common/networking.h common/rfc.h \
+ client/listener.h client/fragewechsel.h client/../common/rfc.h
+client/main.c:
+common/util.h:
+client/gui/gui_interface.h:
+common/sockets.h:
+common/networking.h:
+common/sockets.h:
+common/rfc.h:
+common/question.h:
+common/util.h:
+common/networking.h:
+common/rfc.h:
+client/listener.h:
+client/fragewechsel.h:
+client/../common/rfc.h:

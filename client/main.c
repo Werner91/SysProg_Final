@@ -202,7 +202,7 @@ int main(int argc, char **argv){
 		pthread_create(&Listener_thread, NULL, (void *) &listener_main,&socketDeskriptor);
 
 		//Fragewechsel-Thread erzeugen
-		sem_init(&frage, 0, 0);
+		sem_init(&sem_frage, 0, 0);
 		pthread_t Fragewechsel_thread;
 		pthread_create(&Fragewechsel_thread, NULL, (void *) &fragewechsel_main,	&socketDeskriptor);
 

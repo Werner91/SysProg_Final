@@ -1,0 +1,19 @@
+client/listener.o: client/listener.c client/listener.h common/rfc.h \
+ common/question.h client/gui/gui_interface.h common/sockets.h \
+ common/networking.h common/sockets.h common/rfc.h common/util.h \
+ common/networking.h client/main.h client/fragewechsel.h \
+ client/../common/rfc.h
+client/listener.c:
+client/listener.h:
+common/rfc.h:
+common/question.h:
+client/gui/gui_interface.h:
+common/sockets.h:
+common/networking.h:
+common/sockets.h:
+common/rfc.h:
+common/util.h:
+common/networking.h:
+client/main.h:
+client/fragewechsel.h:
+client/../common/rfc.h:

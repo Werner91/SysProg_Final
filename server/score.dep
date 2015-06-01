@@ -1,0 +1,7 @@
+server/score.o: server/score.c server/score.h common/rfc.h common/question.h \
+ server/user.h
+server/score.c:
+server/score.h:
+common/rfc.h:
+common/question.h:
+server/user.h:
