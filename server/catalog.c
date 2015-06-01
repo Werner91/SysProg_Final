@@ -3,6 +3,8 @@
  * Multiplayer-Quiz
  *
  * Server
+ *
+ * Gruppe_04 Stroh,Strohm,Steinbinder
  * 
  * catalog.c: Implementierung der Fragekatalog-Behandlung und Loader-Steuerung
  */

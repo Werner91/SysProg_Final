@@ -2,6 +2,8 @@
  * Systemprogrammierung
  * Multiplayer-Quiz
  *
+ * Gruppe_04 Stroh,Strohm,Steinbinder
+ *
  * Gemeinsam verwendete Module
  *
  * sockets.c: Implementierung der Funktionen zum Erstellen von Sockets

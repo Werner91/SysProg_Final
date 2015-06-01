@@ -3,6 +3,8 @@
  * Multiplayer-Quiz
  *
  * Client
+ *
+ * Gruppe_04 Stroh,Strohm,Steinbinder
  * 
  * fragewechsel.c: Implementierung des Fragewechsel-Threads
  */
@@ -13,15 +15,15 @@
 
 #include <unistd.h>
 
-/*
- * Thread fordert Fragen vom Server an
- */
-void *fragewechsel_main(int *sockD) {
+
+ //Thread fordert Fragen vom Server an
+
+void *fragewechsel_main(int *_socket) {
     while(1){
         // warte auf Freigabe
-        sem_wait(&frage);
+        sem_wait(&sem_frage);
         sleep(3);
         // Frage vom Server anfordern
-        questionRequest(*sockD);
+        questionRequest(*_socket);
     }
 }

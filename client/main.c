@@ -3,6 +3,8 @@
  * Multiplayer-Quiz
  *
  * Client
+ *
+ * Gruppe_04 Stroh,Strohm,Steinbinder
  * 
  * main.c: Hauptprogramm des Clients
  */

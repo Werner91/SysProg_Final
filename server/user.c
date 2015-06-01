@@ -4,6 +4,8 @@
  *
  * Server
  * 
+ * Gruppe_04 Stroh,Strohm,Steinbinder
+ *
  * user.c: Implementierung der User-Verwaltung
  */
 

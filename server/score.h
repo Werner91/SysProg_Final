@@ -4,6 +4,8 @@
  *
  * Server
  * 
+ * Gruppe_04 Stroh,Strohm,Steinbinder
+ *
  * score.h: Header für den Score Agent
  */
 

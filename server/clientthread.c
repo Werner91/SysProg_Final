@@ -4,6 +4,8 @@
  *
  * Server
  * 
+ * Gruppe_04 Stroh,Strohm,Steinbinder
+ *
  * clientthread.c: Implementierung des Client-Threads
  */
 

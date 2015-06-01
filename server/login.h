@@ -4,6 +4,8 @@
  *
  * Server
  * 
+ * Gruppe_04 Stroh,Strohm,Steinbinder
+ *
  * login.h: Header für das Login
  */
 

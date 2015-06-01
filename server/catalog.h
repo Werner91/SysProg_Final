@@ -4,6 +4,8 @@
  *
  * Server
  * 
+ * Gruppe_04 Stroh,Strohm,Steinbinder
+ *
  * catalog.h: Header für die Katalogbehandlung und Loader-Steuerung
  */
 

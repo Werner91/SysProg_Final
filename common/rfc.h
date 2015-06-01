@@ -2,6 +2,8 @@
  * Systemprogrammierung
  * Multiplayer-Quiz
  *
+ * Gruppe_04 Stroh,Strohm,Steinbinder
+ *
  * Gemeinsam verwendete Module
  * 
  * rfc.h: Definitionen für das Netzwerkprotokoll gemäß dem RFC

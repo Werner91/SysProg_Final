@@ -3,6 +3,8 @@
  * Multiplayer-Quiz
  *
  * Client
+ *
+ * Gruppe_04 Stroh,Strohm,Steinbinder
  * 
  * fragewechsel.h: Header für den Fragewechsel-Thread
  */
@@ -13,7 +15,7 @@
 #include "../common/rfc.h"
 #include <semaphore.h>
 
-sem_t frage;
+sem_t sem_frage;
 
 void *fragewechsel_main(int*);
 

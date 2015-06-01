@@ -4,6 +4,8 @@
  *
  * Client
  *
+ * Gruppe_04 Stroh,Strohm,Steinbinder
+ *
  * main.h: Header für Main
  */
 

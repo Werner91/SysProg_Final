@@ -1,8 +1,12 @@
 /*
- * main.h
+ * Systemprogrammierung
+ * Multiplayer-Quiz
  *
- *  Created on: Nov 6, 2014
- *      Author: dschwenk
+ * Server
+ *
+ * Gruppe_04 Stroh,Strohm,Steinbinder
+ *
+ * main.h: Hauptprogramm des Servers
  */
 
 #ifndef MAIN_H_

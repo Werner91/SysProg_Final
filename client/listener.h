@@ -3,6 +3,8 @@
  * Multiplayer-Quiz
  *
  * Client
+ *
+ * Gruppe_04 Stroh,Strohm,Steinbinder
  * 
  * listener.h: Header für den Listener-Thread
  */
