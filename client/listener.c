@@ -33,13 +33,13 @@ bool game_is_running = false;
 
 
 /*
- * Funktion wertet spielerliste aus und aktualisiert
+ * Funktion wertet die Liste mit den Spielern aus und aktualisiert
  * die Spielerliste in der GUI
  */
 void receivePlayerlist(PACKET packet){
 
 	SPIELER userlist[MAX_PLAYERS];
-	int spielerzahl=0;
+	int spielerzahl = 0;
 
 	spielerzahl = ntohs(packet.header.length)/37; // 37 == Groesse PLAYERLIST 1 Spieler
 	infoPrint("Anzahl Spieler in der Playerlist: %i",spielerzahl);
@@ -57,10 +57,10 @@ void receivePlayerlist(PACKET packet){
 		pthread_exit(0);
 	}
 
-	for(int i=0;i< spielerzahl;i++){
-		// kopiere Spieler ID in Spielerliste
-		userlist[i].id=packet.content.playerlist[i].id;
-		// mehr als 4 Spieler?
+	for(int i = 0; i< spielerzahl; i++){
+		// schreibe Spieler_ID in Spielerliste
+		userlist[i].id = packet.content.playerlist[i].id;
+		// mehr als 4 Spieler? -> Fehlermeldung
 		if(i > MAX_PLAYERS){
 			infoPrint("Maximale Anzahl an Spieler erreicht!");
 			exit(1);
@@ -69,15 +69,15 @@ void receivePlayerlist(PACKET packet){
 		// kopiere Name aus Paket in Spielerliste
 		strncpy(userlist[i].name, packet.content.playerlist[i].playername,PLAYER_NAME_LENGTH);
 
-		// Ausgabe der angemeldeten Spieler
+		// Ausgabe der angemeldeten Spielernamen
 		infoPrint("%s ist angemeldet", userlist[i].name);
-		preparation_addPlayer(userlist[packet.content.playerlist[i].id].name);
+		preparation_addPlayer(userlist[packet.content.playerlist[i].id].name); //Füge namen zur GUI hinzu
 
 		game_setPlayerName(i + 1, packet.content.playerlist[i].playername);
 		game_setPlayerScore(i + 1, ntohl(packet.content.playerlist[i].score));
 		if ((clientID == userlist[i].id)) {
 			game_highlightPlayer(i+1);
-			infoPrint("clientID %i trifft zu, hebe Spielername hervor", clientID);
+			infoPrint("clientID %i trifft zu, hebe den Namen des Spielers hervor", clientID);
 		}
 	}
 }
@@ -196,7 +196,7 @@ void *listener_main(int * sockD){
     // Empfangsschleife
 	int stop = 0;
 	while(stop == 0){
-		PACKET packet = recvPacket(*sockD);
+		PACKET packet = recvPacket(*sockD); //holt Packet aus Server
 		switch (packet.header.type){
             // RFC_CATALOGRESPONSE
             case RFC_CATALOGRESPONSE:
