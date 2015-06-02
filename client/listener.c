@@ -32,6 +32,28 @@ int clientID;
 bool game_is_running = false;
 
 
+
+
+/*
+ * Funktion wertet empfangen Katalog aus und
+ * fuegt diesen der GUI hinzu
+ */
+void receiveCatalogList(PACKET _packet) {
+    // Antwort auswerten und anzeigen
+    if(ntohs(_packet.header.length) > 0){
+        infoPrint("%s", _packet.content.catalogname);
+    	char buffer_array[ntohs(_packet.header.length)];
+	    strncpy(buffer_array, _packet.content.catalogname,ntohs(_packet.header.length));
+	    buffer_array[ntohs(_packet.header.length)] = '\0';
+	    preparation_addCatalog(buffer_array);
+    }
+}
+
+
+
+
+
+
 /*
  * Funktion wertet die Liste mit den Spielern aus und aktualisiert
  * die Spielerliste in der GUI
@@ -83,34 +105,9 @@ void receivePlayerlist(PACKET _packet){
 }
 
 
-/*
- * Funktion wertet empfangen Katalog aus und
- * fuegt diesen der GUI hinzu
- */
-void receiveCatalogList(PACKET _packet) {
-    // Antwort auswerten und anzeigen
-    if(ntohs(_packet.header.length) > 0){
-        infoPrint("%s", _packet.content.catalogname);
-    	char buffer_array[ntohs(_packet.header.length)];
-	    strncpy(buffer_array, _packet.content.catalogname,ntohs(_packet.header.length));
-	    buffer_array[ntohs(_packet.header.length)] = '\0';
-	    preparation_addCatalog(buffer_array);
-    }    
-}
 
 
-/*
- * Funktion wertet empfangen Katalog aus und
- * setzt diesen in der GUI auf aktiv
- */
-void receiveCatalogChange(PACKET _packet){	      
-  if (ntohs(_packet.header.length) > 0) {
-    char buffer_array[ntohs(_packet.header.length)];
-    strncpy(buffer_array, _packet.content.catalogname, ntohs(_packet.header.length));
-    buffer_array[ntohs(_packet.header.length)] = '\0';
-    preparation_selectCatalog(buffer_array);
-  }  
-}
+
 
 
 /*
@@ -134,6 +131,27 @@ void receiveErrorMessage (PACKET _packet){
 		exit(0);
 	}
 }
+
+
+
+
+
+
+/*
+ * Funktion wertet empfangen Katalog aus und
+ * setzt diesen in der GUI auf aktiv
+ */
+void receiveCatalogChange(PACKET _packet){
+  if (ntohs(_packet.header.length) > 0) {
+    char buffer_array[ntohs(_packet.header.length)];
+    strncpy(buffer_array, _packet.content.catalogname, ntohs(_packet.header.length));
+    buffer_array[ntohs(_packet.header.length)] = '\0';
+    preparation_selectCatalog(buffer_array);
+  }
+}
+
+
+
 
 
 /*
@@ -211,7 +229,7 @@ void *listener_main(int* _sockDeskriptor){
 			// RFC_PLAYERLIST
 			case RFC_PLAYERLIST:
 				receivePlayerlist(packet);
-				infoPrint("Spielerliste erhalten")
+				infoPrint("Spielerliste erhalten");
 				break;
 			// RFC_STARTGAME
 			case RFC_STARTGAME:
@@ -228,7 +246,7 @@ void *listener_main(int* _sockDeskriptor){
 			case RFC_QUESTION:
 				infoPrint("Question erhalten");
 
-				char msg[50];
+				char msg_arr[50];
 				if (packet.header.length != 0) {
 					game_clearAnswerMarksAndHighlights();
 					game_setQuestion(packet.content.question.question);
@@ -236,17 +254,16 @@ void *listener_main(int* _sockDeskriptor){
 						game_setAnswer(i, packet.content.question.answers[i]);
 					}
 					game_setControlsEnabled(1);
-					sprintf(msg, "Sie haben %i Sekunden Zeit\n",
-							packet.content.question.timeout);
+					sprintf(msg_arr, "Sie haben %i Sekunden Zeit\n",packet.content.question.timeout);
 					game_setStatusIcon(0);
-					// game_setStatusText(msg);
+
 				} else if (ntohs(packet.header.length) == 0) {
-					sprintf(msg, "Alle Fragen beantwortet, bitte Warten.\n");
-					game_setStatusText(msg);
+					sprintf(msg_arr, "Alle Fragen beantwortet, bitte Warten.\n");
+					game_setStatusText(msg_arr);
 					game_setStatusIcon(0);
 				}
 
-				game_setStatusText(msg);
+				game_setStatusText(msg_arr);
 				break;
 			case RFC_QUESTIONRESULT:
 				infoPrint("Frageauswertung erhalten!");
@@ -291,8 +308,8 @@ void *listener_main(int* _sockDeskriptor){
 
 				break;
 			case RFC_GAMEOVER:
-				sprintf(msg, "Glückwunsch, Sie wurden %i.\n", packet.content.playerrank);
-				guiShowMessageDialog(msg, 1); //1=gui main geht nach Bestätigen zum Aufrufer zurück
+				sprintf(msg_arr, "Glückwunsch, Sie wurden %i.\n", packet.content.playerrank);
+				guiShowMessageDialog(msg_arr, 1); //1=gui main geht nach Bestätigen zum Aufrufer zurück
 
 				pthread_exit(0);
 				return NULL;
