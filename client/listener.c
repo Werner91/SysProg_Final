@@ -36,12 +36,12 @@ bool game_is_running = false;
  * Funktion wertet die Liste mit den Spielern aus und aktualisiert
  * die Spielerliste in der GUI
  */
-void receivePlayerlist(PACKET packet){
+void receivePlayerlist(PACKET _packet){
 
 	SPIELER userlist[MAX_PLAYERS];
 	int spielerzahl = 0;
 
-	spielerzahl = ntohs(packet.header.length)/37; // 37 == Groesse PLAYERLIST 1 Spieler
+	spielerzahl = ntohs(_packet.header.length)/37; // 37 == Groesse PLAYERLIST 1 Spieler
 	infoPrint("Anzahl Spieler in der Playerlist: %i",spielerzahl);
 
 	// Playerlist leeren (GUI)
@@ -59,7 +59,7 @@ void receivePlayerlist(PACKET packet){
 
 	for(int i = 0; i< spielerzahl; i++){
 		// schreibe Spieler_ID in Spielerliste
-		userlist[i].id = packet.content.playerlist[i].id;
+		userlist[i].id = _packet.content.playerlist[i].id;
 		// mehr als 4 Spieler? -> Fehlermeldung
 		if(i > MAX_PLAYERS){
 			infoPrint("Maximale Anzahl an Spieler erreicht!");
@@ -67,14 +67,14 @@ void receivePlayerlist(PACKET packet){
 		}
 
 		// kopiere Name aus Paket in Spielerliste
-		strncpy(userlist[i].name, packet.content.playerlist[i].playername,PLAYER_NAME_LENGTH);
+		strncpy(userlist[i].name, _packet.content.playerlist[i].playername,PLAYER_NAME_LENGTH);
 
 		// Ausgabe der angemeldeten Spielernamen
 		infoPrint("%s ist angemeldet", userlist[i].name);
-		preparation_addPlayer(userlist[packet.content.playerlist[i].id].name); //Füge namen zur GUI hinzu
+		preparation_addPlayer(userlist[_packet.content.playerlist[i].id].name); //Füge namen zur GUI hinzu
 
-		game_setPlayerName(i + 1, packet.content.playerlist[i].playername);
-		game_setPlayerScore(i + 1, ntohl(packet.content.playerlist[i].score));
+		game_setPlayerName(i + 1, _packet.content.playerlist[i].playername);
+		game_setPlayerScore(i + 1, ntohl(_packet.content.playerlist[i].score));
 		if ((clientID == userlist[i].id)) {
 			game_highlightPlayer(i+1);
 			infoPrint("clientID %i trifft zu, hebe den Namen des Spielers hervor", clientID);
@@ -87,14 +87,14 @@ void receivePlayerlist(PACKET packet){
  * Funktion wertet empfangen Katalog aus und
  * fuegt diesen der GUI hinzu
  */
-void receiveCatalogList(PACKET packet) {
+void receiveCatalogList(PACKET _packet) {
     // Antwort auswerten und anzeigen
-    if(ntohs(packet.header.length) > 0){
-        infoPrint("%s", packet.content.catalogname);
-    	char buffer[ntohs(packet.header.length)];
-	    strncpy(buffer, packet.content.catalogname,ntohs(packet.header.length));
-	    buffer[ntohs(packet.header.length)] = '\0';
-	    preparation_addCatalog(buffer);
+    if(ntohs(_packet.header.length) > 0){
+        infoPrint("%s", _packet.content.catalogname);
+    	char buffer_array[ntohs(_packet.header.length)];
+	    strncpy(buffer_array, _packet.content.catalogname,ntohs(_packet.header.length));
+	    buffer_array[ntohs(_packet.header.length)] = '\0';
+	    preparation_addCatalog(buffer_array);
     }    
 }
 
@@ -103,12 +103,12 @@ void receiveCatalogList(PACKET packet) {
  * Funktion wertet empfangen Katalog aus und
  * setzt diesen in der GUI auf aktiv
  */
-void receiveCatalogChange(PACKET packet){	      
-  if (ntohs(packet.header.length) > 0) {
-    char buffer[ntohs(packet.header.length)];
-    strncpy(buffer, packet.content.catalogname, ntohs(packet.header.length));
-    buffer[ntohs(packet.header.length)] = '\0';
-    preparation_selectCatalog(buffer);
+void receiveCatalogChange(PACKET _packet){	      
+  if (ntohs(_packet.header.length) > 0) {
+    char buffer_array[ntohs(_packet.header.length)];
+    strncpy(buffer_array, _packet.content.catalogname, ntohs(_packet.header.length));
+    buffer_array[ntohs(_packet.header.length)] = '\0';
+    preparation_selectCatalog(buffer_array);
   }  
 }
 
@@ -116,20 +116,20 @@ void receiveCatalogChange(PACKET packet){
 /*
  * Funktion wertet Fehlernachrichten aus
  */
-void receiveErrorMessage (PACKET packet){
+void receiveErrorMessage (PACKET _packet){
 	char error_message[MAX_MESSAGE_LENGTH];
 	// hole Errornachricht
-	strncpy (error_message, packet.content.error.errormessage, ntohs (packet.header.length)-1);
+	strncpy (error_message, _packet.content.error.errormessage, ntohs (_packet.header.length)-1);
 	// Nullterminierung
-	error_message[ntohs (packet.header.length)-1]= '\0';
+	error_message[ntohs (_packet.header.length)-1]= '\0';
 	// zeige Errordialog + gebe Fehler auf Konsole aus
-	errorPrint("Fehler: %s\n", packet.content.error.errormessage);
+	errorPrint("Fehler: %s\n", _packet.content.error.errormessage);
 	// beende Client falls fataler Error
-	if(packet.content.error.errortype == ERR_SPIELLEITERLEFTGAME){
+	if(_packet.content.error.errortype == ERR_SPIELLEITERLEFTGAME){
 		guiShowErrorDialog(error_message, 0);
 		exit(0);
 	}
-	else if((packet.content.error.errortype == ERR_TOOFEWPLAERS) && game_is_running){
+	else if((_packet.content.error.errortype == ERR_TOOFEWPLAERS) && game_is_running){
 		guiShowMessageDialog(error_message, 0);
 		exit(0);
 	}
@@ -139,33 +139,33 @@ void receiveErrorMessage (PACKET packet){
 /*
  * Funktion fordert eine neue Frage vom Server an
  */
-void questionRequest(int socketDeskriptor){
+void questionRequest(int _socketDeskriptor){
 	PACKET packet;
 	packet.header.type = RFC_QUESTIONREQUEST;
 	packet.header.length = 0;
-	sendPacket(packet, socketDeskriptor);
-	infoPrint("Question Request gesendet!");
+	sendPacket(packet, _socketDeskriptor);
+	infoPrint("Question Request versendet!");
 }
 
 
-void *listener_main(int * sockD){
+void *listener_main(int* _sockDeskriptor){
 
     // warte auf Antwort des Servers
-    PACKET response = recvPacket(*sockD);
+    PACKET response = recvPacket(*_sockDeskriptor);
 
     // RFC_LOGINRESPONSEOK
     if(response.header.type == RFC_LOGINRESPONSEOK){
-        infoPrint("Login Response ok");
+        infoPrint("Login Response Ok");
         clientID = response.content.loginresponseok.clientid;
 
-        infoPrint("Fordere verfuegbare Kataloge an");
+        infoPrint("Verfuegbare Kataloge anfordern");
         catalogRequest();
     }
 	// RFC_ERRORWARNING
     else if(response.header.type == RFC_ERRORWARNING){
         char message[(ntohs(response.header.length))];
         strncpy(message, response.content.error.errormessage,ntohs(response.header.length) - 1);
-        // Nullterminierung
+        // Nullterminierung des Arrays
         message[ntohs(response.header.length) - 1] = '\0';
         // zeige in GUI Fehlermeldung an
         infoPrint("Fehler: %s\n", message);
@@ -180,7 +180,7 @@ void *listener_main(int * sockD){
         exit(0);
     }
 
-    //An GUI mitteilen ob Spielleiter oder nicht
+    //An GUI mitteilen ob der Spieler Spielleiter ist
     if(clientID == 0){
         preparation_setMode(PREPARATION_MODE_PRIVILEGED);
     }
@@ -196,36 +196,37 @@ void *listener_main(int * sockD){
     // Empfangsschleife
 	int stop = 0;
 	while(stop == 0){
-		PACKET packet = recvPacket(*sockD); //holt Packet aus Server
+		PACKET packet = recvPacket(*_sockDeskriptor); //holt Packet aus Server
 		switch (packet.header.type){
             // RFC_CATALOGRESPONSE
             case RFC_CATALOGRESPONSE:
                 receiveCatalogList(packet);
+                infoPrint("Catalogresponse erhalten");
                 break;
             // RFC_CATALOGCHANGE
             case RFC_CATALOGCHANGE:
                 receiveCatalogChange(packet);
+                infoPrint("Catalogchange erhalten");
                 break;
 			// RFC_PLAYERLIST
 			case RFC_PLAYERLIST:
 				receivePlayerlist(packet);
+				infoPrint("Spielerliste erhalten")
 				break;
 			// RFC_STARTGAME
 			case RFC_STARTGAME:
 				infoPrint("Spiel gestartet!");
 				game_is_running = true;
 				// hole Frage
-				questionRequest(*sockD);
+				questionRequest(*_sockDeskriptor);
 
 				// Vorbereitungsfenster ausblenden und Spielfenster anzeigen
 				game_showWindow();
 				preparation_hideWindow();
 				break;
-
-			//case RFC_
-
+			//RFC_QUESTION
 			case RFC_QUESTION:
-				infoPrint("Frage erhalten");
+				infoPrint("Question erhalten");
 
 				char msg[50];
 				if (packet.header.length != 0) {
