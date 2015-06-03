@@ -69,10 +69,12 @@ void receivePlayerlist(PACKET _packet){
 	// Playerlist leeren (GUI)
 	preparation_clearPlayers();
 
-	for (int i = 1; i <= MAX_PLAYERS; i++) { // i = reihenfolge der Spieler
+	/*
+	for (int i = 1; i <= spielerzahl; i++) { // i = reihenfolge der Spieler
 		game_setPlayerName(i, ""); //Schreibt Namen in die GUI
 		game_setPlayerScore(i, 0);
 	}
+	*/
 
 	if (game_is_running && spielerzahl < 2) {
 		guiShowMessageDialog("Zu wenig Spieler! Spiel wird beendet!", 1); //1=gui main geht nach Bestätigen zum Aufrufer zurück
@@ -83,6 +85,7 @@ void receivePlayerlist(PACKET _packet){
 		// schreibe Spieler_ID in Spielerliste
 		userlist[i].id = _packet.content.playerlist[i].id;
 		// mehr als 4 Spieler? -> Fehlermeldung
+		printf("Spielerliste: %s\n",_packet.content.playerlist[i].playername );
 		if(i > MAX_PLAYERS){
 			infoPrint("Maximale Anzahl an Spieler erreicht!");
 			exit(1);
@@ -93,7 +96,7 @@ void receivePlayerlist(PACKET _packet){
 
 		// Ausgabe der angemeldeten Spielernamen
 		infoPrint("%s ist angemeldet", userlist[i].name);
-		preparation_addPlayer(userlist[_packet.content.playerlist[i].id].name); //Füge namen zur GUI hinzu
+		preparation_addPlayer(userlist[i].name); //Füge namen zur GUI hinzu
 
 		game_setPlayerName(i + 1, _packet.content.playerlist[i].playername);
 		game_setPlayerScore(i + 1, ntohl(_packet.content.playerlist[i].score));
@@ -113,23 +116,25 @@ void receivePlayerlist(PACKET _packet){
 /*
  * Funktion wertet Fehlernachrichten aus
  */
-void receiveErrorMessage (PACKET _packet){
+int receiveErrorMessage (PACKET _packet){
 	char error_message[MAX_MESSAGE_LENGTH];
 	// hole Errornachricht
 	strncpy (error_message, _packet.content.error.errormessage, ntohs (_packet.header.length)-1);
 	// Nullterminierung
 	error_message[ntohs (_packet.header.length)-1]= '\0';
 	// zeige Errordialog + gebe Fehler auf Konsole aus
-	errorPrint("Fehler: %s\n", _packet.content.error.errormessage);
 	// beende Client falls fataler Error
 	if(_packet.content.error.errortype == ERR_SPIELLEITERLEFTGAME){
-		guiShowErrorDialog(error_message, 0);
-		exit(0);
-	}
-	else if((_packet.content.error.errortype == ERR_TOOFEWPLAERS) && game_is_running){
+		guiShowErrorDialog(error_message, 1);
+		return 1;
+	} else if (_packet.content.error.errortype == ERR_FATAL) {
+		guiShowErrorDialog(error_message, 1); // GUI wird beendet und Dialogbox für fehler ausgegeben
+		return 1;
+	} else if ((_packet.content.error.errortype == ERR_TOOFEWPLAERS) && game_is_running) {
 		guiShowMessageDialog(error_message, 0);
-		exit(0);
 	}
+
+	return 0;
 }
 
 
@@ -188,6 +193,7 @@ void *listener_main(int* _sockDeskriptor){
         // zeige in GUI Fehlermeldung an
         infoPrint("Fehler: %s\n", message);
         guiShowErrorDialog(message, response.content.error.errortype);
+        guiQuit();
         exit(0);
     }
 	// Verbindung verloren
@@ -195,6 +201,7 @@ void *listener_main(int* _sockDeskriptor){
         // zeige in GUI Fehlermeldung an
         infoPrint("Verbindung zum Server verloren!");
         guiShowErrorDialog("Verbindung zum Server verloren!", response.content.error.errortype);
+        guiQuit();
         exit(0);
     }
 
@@ -274,8 +281,6 @@ void *listener_main(int* _sockDeskriptor){
 					infoPrint("Korrekte Antwort: %i", packet.content.questionresult.correct);
 					infoPrint("Spieler Antowrt: %i", packet.content.questionresult.timeout);
 					uint8_t playerSelection = getAnswerSelection();
-					infoPrint("\n\n%d\n\n", playerSelection);
-					//infoPrint("\n\nPRIx8", playerSelection);
 					for (int i = 0; i < NUM_ANSWERS; i++) {
 						if (packet.content.questionresult.correct & (1 << i)) { // schiffte 1 um i nach links
 
@@ -316,7 +321,7 @@ void *listener_main(int* _sockDeskriptor){
 				break;
 			// RFC_ERRORWARNING
 			case RFC_ERRORWARNING:
-				receiveErrorMessage(packet);
+				stop = receiveErrorMessage(packet);
 				break;
 			default:
 				break;

@@ -112,7 +112,7 @@ void *client_thread_main(int* client_id){
 							endServer();
 						}
 						// sende aktualisierte Spielerliste an alle verbliebene Spieler
-						// sendPlayerList();
+						sendPlayerList();
 						sem_post(&semaphor_score);
 					}
 				}
@@ -125,7 +125,7 @@ void *client_thread_main(int* client_id){
 					}
 				}
 				// beende Thread
-				pthread_exit(0);
+				pthread_exit(NULL);
 				return NULL;
 
 				// Client hat Kataloge angefagt - RFC_CATALOGREQUEST
@@ -279,6 +279,10 @@ void *client_thread_main(int* client_id){
 	pthread_exit(0);
 	return NULL;
 }
+
+
+
+
 
 
 /*

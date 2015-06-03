@@ -25,7 +25,7 @@ typedef struct {
 void receivePlayerlist(PACKET);
 void receiveCatalogList(PACKET);
 void receiveCatalogChange(PACKET);
-void receiveErrorMessage(PACKET);
+int receiveErrorMessage(PACKET);
 void questionRequest(int);
 void *listener_main(int *);
 

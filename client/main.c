@@ -16,6 +16,7 @@
 #include "common/rfc.h"
 #include "listener.h"
 #include "fragewechsel.h"
+#include "server/user.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -32,6 +33,7 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include <printf.h>
+#include <signal.h>
 
 
 int socketDeskriptor;
@@ -171,10 +173,37 @@ void process_client_commands(int argc, char** argv) {
 }
 
 
+/*
+ * Singnal handler
+ * http://www.csl.mtu.edu/cs4411.ck/www/NOTES/signal/install.html
+ */
+void INThandler(int sig) {
+
+	if(sig != SIGINT){
+		debugPrint("Signal is not SIGINT.");
+		return;
+	}
+	else {
+		infoPrint("Der Client wird beendet ");
+		  PACKET packet;
+		    packet.header.type = RFC_ERRORWARNING;
+		    packet.content.error.errortype == ERR_CLIENTLEFTGAME;
+		    packet.header.length = htons(strlen("Der Spieler hat das Spiel verlassen!"));
+		    packet.content.error.errortype = ERR_CLIENTLEFTGAME;
+		    strncpy(packet.content.error.errormessage,"Der Spieler hat das Spiel verlassen!",ntohs(packet.header.length));
+		    sendPacket(packet, socketDeskriptor);
+		    //pthread_exit
+		    guiQuit();
+	}
+}
+
+
+
 
 int main(int argc, char **argv){
 
 	setProgName(argv[0]);
+	signal(SIGINT, INThandler);
 
 	// debugEnable();
 
@@ -252,6 +281,7 @@ void preparation_onWindowClosed(void) {
     packet.content.error.errortype = ERR_CLIENTLEFTGAME;
     strncpy(packet.content.error.errormessage,"Der Spieler hat das Spiel verlassen!",ntohs(packet.header.length));
     sendPacket(packet, socketDeskriptor);
+
     guiQuit();
 }
 
