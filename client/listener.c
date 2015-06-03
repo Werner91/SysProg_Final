@@ -64,21 +64,34 @@ void receivePlayerlist(PACKET _packet){
 	int spielerzahl = 0;
 
 	spielerzahl = ntohs(_packet.header.length)/37; // 37 == Groesse PLAYERLIST 1 Spieler
-	infoPrint("Anzahl Spieler in der Playerlist: %i",spielerzahl);
+	infoPrint("\n\nAnzahl Spieler in der Playerlist: %i\n\n",spielerzahl);
 
 	// Playerlist leeren (GUI)
 	preparation_clearPlayers();
 
-	/*
+/*
 	for (int i = 1; i <= spielerzahl; i++) { // i = reihenfolge der Spieler
 		game_setPlayerName(i, ""); //Schreibt Namen in die GUI
 		game_setPlayerScore(i, 0);
+
+
+
+		printf("\n\n\nSpielernamenliste wird aktualisiert\n\n\n");
+
 	}
 	*/
 
 	if (game_is_running && spielerzahl < 2) {
 		guiShowMessageDialog("Zu wenig Spieler! Spiel wird beendet!", 1); //1=gui main geht nach Bestätigen zum Aufrufer zurück
 		pthread_exit(0);
+	}
+
+
+	if (game_is_running) {
+	    for (int i = 1; i <= MAX_PLAYERS; i++) {
+	        game_setPlayerName(i, NULL);
+	        game_setPlayerScore(i, 0);
+	    }
 	}
 
 	for(int i = 0; i< spielerzahl; i++){
@@ -321,6 +334,7 @@ void *listener_main(int* _sockDeskriptor){
 				break;
 			// RFC_ERRORWARNING
 			case RFC_ERRORWARNING:
+
 				stop = receiveErrorMessage(packet);
 				break;
 			default:

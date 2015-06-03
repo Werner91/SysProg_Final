@@ -99,17 +99,17 @@ int removePlayer(int client_id){
 		i++;
 	}
 
-	/*
+/*
 	char* _name = spieler[i].name;
 	int removeplayer = preparation_removePlayer(&_name);
-	*/
+*/
 
 
 	// setze Werte auf Standardwerte zurueck
 
 	spieler[i].id = -1;
 
-	/*
+/*
 	spieler[i].name[0] = '\0';
 	spieler[i].sockDesc = 0;
 	spieler[i].score = 0;
@@ -171,7 +171,7 @@ void sendPlayerList(){
 		strncpy(playerlist.playername, spieler[i].name, PLAYER_NAME_LENGTH);
 		playerlist.score = htonl(spieler[i].score);
 		packet.content.playerlist[i] = playerlist;
-		printf("\n\n %d\n\n", i);
+
 	}
 	// Laenge der Message: Anzahl der Spieler * Groeße der PLAYERLIST
 	packet.header.length = htons(sizeof(PLAYERLIST) * user_count);
