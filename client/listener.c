@@ -334,6 +334,9 @@ void *listener_main(int* _sockDeskriptor){
 				break;
 			// RFC_ERRORWARNING
 			case RFC_ERRORWARNING:
+				if(packet.content.error.errortype == ERR_TOOFEWPLAERS){
+					guiShowMessageDialog("Zu wenig Spieler um das Spiel zu starten", 0);
+				}
 
 				stop = receiveErrorMessage(packet);
 				break;
