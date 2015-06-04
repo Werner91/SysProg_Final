@@ -40,7 +40,7 @@ int socketDeskriptor;
 int clientID;
 
 
-char *name = "unknown";
+char *name = "";
 // Standardserver
 char *server = "localhost";
 // Standardserverport
