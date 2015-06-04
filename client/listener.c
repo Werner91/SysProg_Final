@@ -205,8 +205,8 @@ void *listener_main(int* _sockDeskriptor){
         message[ntohs(response.header.length) - 1] = '\0';
         // zeige in GUI Fehlermeldung an
         infoPrint("Fehler: %s\n", message);
-        guiShowErrorDialog(message, response.content.error.errortype);
-        guiQuit();
+        //guiShowErrorDialog(message, response.content.error.errortype);
+        //guiQuit();
         exit(0);
     }
 	// Verbindung verloren
