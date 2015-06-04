@@ -187,7 +187,6 @@ void INThandler(int sig) {
 		infoPrint("Der Client wird beendet ");
 		  PACKET packet;
 		    packet.header.type = RFC_ERRORWARNING;
-		    packet.content.error.errortype == ERR_CLIENTLEFTGAME;
 		    packet.header.length = htons(strlen("Der Spieler hat das Spiel verlassen!"));
 		    packet.content.error.errortype = ERR_CLIENTLEFTGAME;
 		    strncpy(packet.content.error.errormessage,"Der Spieler hat das Spiel verlassen!",ntohs(packet.header.length));
