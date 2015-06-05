@@ -22,6 +22,7 @@ void *fragewechsel_main(int *_socket) {
     while(1){
         // warte auf Freigabe
         sem_wait(&sem_frage);
+        // schlafe für 3 Sekunden bevor die nächste Frage geladen wird
         sleep(3);
         // Frage vom Server anfordern
         questionRequest(*_socket);

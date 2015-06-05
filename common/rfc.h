@@ -20,19 +20,19 @@
 
 
 // Uebersicht über die Nachrichtentypen
-#define RFC_LOGINREQUEST         1 // Anmeldung eines Clients am Server
-#define RFC_LOGINRESPONSEOK      2 // Anmeldung am Server erfolgreich
-#define RFC_CATALOGREQUEST       3 // Anforderung der Liste der Fragakata-loge durch den Client
-#define RFC_CATALOGRESPONSE      4 // Name eines Fragekatalogs (mehrere Nachrichten dieses Typs ergeben die vollständige Liste)
-#define RFC_CATALOGCHANGE        5 // Spielleiter hat Katalogauswahl geaendert, wird an alle Clients weitergeleitet
-#define RFC_PLAYERLIST           6 // Liste der Spielteilnehmer, wird versendet bei: An-/Abmeldung, Spielstart und Aenderung des Punktestandes
-#define RFC_STARTGAME            7 // Spielleiter möchte Spiel starten, wird vom Server ausgewertet und an Clients weitergeleitet
-#define RFC_QUESTIONREQUEST      8 // Anforderung einer Quizfrage durch einen Client
-#define RFC_QUESTION             9 // Reaktion auf QuestionRequest: Transport einer Quiz-Frage zum Client
+#define RFC_LOGINREQUEST        				1 // Anmeldung eines Clients am Server
+#define RFC_LOGINRESPONSEOK 		    2 // Anmeldung am Server erfolgreich
+#define RFC_CATALOGREQUEST     		  	3 // Anforderung der Liste der Fragakata-loge durch den Client
+#define RFC_CATALOGRESPONSE 		    4 // Name eines Fragekatalogs (mehrere Nachrichten dieses Typs ergeben die vollständige Liste)
+#define RFC_CATALOGCHANGE					5 // Spielleiter hat Katalogauswahl geaendert, wird an alle Clients weitergeleitet
+#define RFC_PLAYERLIST           					6 // Liste der Spielteilnehmer, wird versendet bei: An-/Abmeldung, Spielstart und Aenderung des Punktestandes
+#define RFC_STARTGAME         			 		  7 // Spielleiter möchte Spiel starten, wird vom Server ausgewertet und an Clients weitergeleitet
+#define RFC_QUESTIONREQUEST   		   8 // Anforderung einer Quizfrage durch einen Client
+#define RFC_QUESTION             						9 // Reaktion auf QuestionRequest: Transport einer Quiz-Frage zum Client
 #define RFC_QUESTIONANSWERED     10 // Quiz-Frage wurde beantwortet
-#define RFC_QUESTIONRESULT       11 // Auswertung einer Antwort auf eine Quiz-Frage
-#define RFC_GAMEOVER             12 // Alle Clients sind fertig, Mitteilung ueber Endplatzierung
-#define RFC_ERRORWARNING         255 // Fehlermeldung
+#define RFC_QUESTIONRESULT     			  11 // Auswertung einer Antwort auf eine Quiz-Frage
+#define RFC_GAMEOVER             					12 // Alle Clients sind fertig, Mitteilung ueber Endplatzierung
+#define RFC_ERRORWARNING      		   255 // Fehlermeldung
 
 #define ERR_WARNING 0
 #define ERR_FATAL 1

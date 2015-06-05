@@ -48,6 +48,8 @@ char *port = "8111";
 // Ausgewählte Antwort
 uint8_t selection = 0;
 
+
+// Funktion um Verbindung zum Server aufzubauen
 int establishConnection(int socketD_, char* port_, char* hostname_) {
 	int portno;
 	struct sockaddr_in serv_addr;
@@ -55,15 +57,15 @@ int establishConnection(int socketD_, char* port_, char* hostname_) {
 	int failure = 0;
 
 	portno = atoi(port_);
-	server = gethostbyname(hostname_);
+	server = gethostbyname(hostname_); //Wandlet Name in IP-Adresse um
 	if(server == NULL ){
 		infoPrint("Error, no such host");
 		failure = 1;
 	}
 	else {
-		bzero((char*) &serv_addr, sizeof(serv_addr));
+		bzero((char*) &serv_addr, sizeof(serv_addr)); //bzero() setzt die anzahl von sizeof(server_addr)  bytes in diesem Bereich beginnend bei  (char*) &serv_addr .
 		serv_addr.sin_family = AF_INET;
-		bcopy(server->h_addr, &serv_addr.sin_addr,server->h_length);
+		bcopy(server->h_addr, &serv_addr.sin_addr,server->h_length); // bcopy() function kopiert (server->h_length) bytes von (server->h_addr)  nach &serv_addr.sin_addr. Das Ergebnis is korrekt wenn sich beide überlappen
 		serv_addr.sin_port = htons(portno);
 
 		if(connect(socketD_, (struct sockaddr*) &serv_addr, sizeof(serv_addr))	< 0){
@@ -74,7 +76,7 @@ int establishConnection(int socketD_, char* port_, char* hostname_) {
 	return failure;
 }
 
-
+//Login anfrage stellen
 void loginRequest(char* name) {
 	PACKET packet;
 	packet.header.type = RFC_LOGINREQUEST;
@@ -174,7 +176,7 @@ void process_client_commands(int argc, char** argv) {
 
 
 /*
- * Singnal handler
+ * Singnal handler bei STRG + C
  * http://www.csl.mtu.edu/cs4411.ck/www/NOTES/signal/install.html
  */
 void INThandler(int sig) {
@@ -191,7 +193,7 @@ void INThandler(int sig) {
 		    packet.content.error.errortype = ERR_CLIENTLEFTGAME;
 		    strncpy(packet.content.error.errormessage,"Der Spieler hat das Spiel verlassen!",ntohs(packet.header.length));
 		    sendPacket(packet, socketDeskriptor);
-		    //pthread_exit
+
 		    guiQuit();
 	}
 }
@@ -201,7 +203,10 @@ void INThandler(int sig) {
 
 int main(int argc, char **argv){
 
+	//Den Programmnamen setzen
 	setProgName(argv[0]);
+
+	//Interrupt Signalhandler setzen
 	signal(SIGINT, INThandler);
 
 	// debugEnable();
@@ -249,7 +254,12 @@ int main(int argc, char **argv){
 
 
 
+/*
+ * GUI Listener Funktionen
+ */
 
+
+// Wenn der Spielleiter den Katalog wechselt
 void preparation_onCatalogChanged(const char *newSelection) {
 	debugPrint("Katalogauswahl: %s", newSelection);
     PACKET packet;
@@ -260,7 +270,7 @@ void preparation_onCatalogChanged(const char *newSelection) {
     fflush(stdout);
 }
 
-
+//Wenn der Spielleiter den Startbutton geklickt hat
 void preparation_onStartClicked(const char *currentSelection) {
     debugPrint("Starte Katalog %s\n", currentSelection);
     PACKET packet;
@@ -271,7 +281,7 @@ void preparation_onStartClicked(const char *currentSelection) {
     sendPacket(packet, socketDeskriptor);
 }
 
-
+// Wenn das Loginfenster geschlossen wird
 void preparation_onWindowClosed(void) {
 	debugPrint("Vorbereitungsfenster geschlossen");
     PACKET packet;
@@ -284,11 +294,13 @@ void preparation_onWindowClosed(void) {
     guiQuit();
 }
 
+
+//Gibt die Antwort des Spieler zurück
 uint8_t getAnswerSelection(){
 	return selection;
 }
 
-
+//Wenn die Antwort des Spieler eingereicht werden soll
 void game_onSubmitClicked(unsigned char selectedAnswers)
 {
 	infoPrint("Absende-Button angeklickt, Bitmaske der Antworten: %u",	(unsigned)selectedAnswers);
@@ -301,7 +313,7 @@ void game_onSubmitClicked(unsigned char selectedAnswers)
 	sendPacket(packet, socketDeskriptor);
 }
 
-
+//Wenn das Spiel schon läuft und ein Spieler seinen Client schließt bzw das Spiel verlässt
 void game_onWindowClosed(void) {
 	debugPrint("Spielfenster geschlossen");
     PACKET packet;

@@ -81,6 +81,7 @@ void receivePlayerlist(PACKET _packet){
 	}
 	*/
 
+	//Bei zuwenig Spielern
 	if (game_is_running && spielerzahl < 2) {
 		guiShowMessageDialog("Zu wenig Spieler! Spiel wird beendet!", 1); //1=gui main geht nach Bestätigen zum Aufrufer zurück
 		pthread_exit(0);
@@ -89,8 +90,8 @@ void receivePlayerlist(PACKET _packet){
 
 	if (game_is_running) {
 	    for (int i = 1; i <= MAX_PLAYERS; i++) {
-	        game_setPlayerName(i, NULL);
-	        game_setPlayerScore(i, 0);
+	        game_setPlayerName(i, NULL); //Name aus der Spielerliste löschen wenn ein Client das Spiel verlässt
+	        game_setPlayerScore(i, 0); //Punktestand dessen Spielers auf 0  setzen
 	    }
 	}
 
@@ -139,10 +140,10 @@ int receiveErrorMessage (PACKET _packet){
 	// beende Client falls fataler Error
 	if(_packet.content.error.errortype == ERR_SPIELLEITERLEFTGAME){
 		guiShowErrorDialog(error_message, 1);
-		return 1;
+		return 1; //Der Rückgabewert 1 Beendet die Endlosschleife in der listener_main
 	} else if (_packet.content.error.errortype == ERR_FATAL) {
 		guiShowErrorDialog(error_message, 1); // GUI wird beendet und Dialogbox für fehler ausgegeben
-		return 1;
+		return 1; //Der Rückgabewert 1 Beendet die Endlosschleife in der listener_main
 	} else if ((_packet.content.error.errortype == ERR_TOOFEWPLAERS) && game_is_running) {
 		guiShowMessageDialog(error_message, 0);
 	}
@@ -268,19 +269,19 @@ void *listener_main(int* _sockDeskriptor){
 
 				char msg_arr[50];
 				if (packet.header.length != 0) {
-					game_clearAnswerMarksAndHighlights();
-					game_setQuestion(packet.content.question.question);
+					game_clearAnswerMarksAndHighlights(); //Entferne Markierungen und Highlight felder
+					game_setQuestion(packet.content.question.question); //Platziere Frage
 					for (int i = 0; i <= 3; i++) {
-						game_setAnswer(i, packet.content.question.answers[i]);
+						game_setAnswer(i, packet.content.question.answers[i]);//Ausgewählte Antworten
 					}
-					game_setControlsEnabled(1);
-					sprintf(msg_arr, "Sie haben %i Sekunden Zeit\n",packet.content.question.timeout);
-					game_setStatusIcon(0);
-
+					game_setControlsEnabled(1); // Absenden button aktivieren
+					sprintf(msg_arr, "Sie haben %i Sekunden Zeit\n",packet.content.question.timeout); // Time-out anzeige für diese Frage
+					game_setStatusIcon(0); //Sanduhr oder kreuz
+					//Wenn alle Fragen beantwortet wurden
 				} else if (ntohs(packet.header.length) == 0) {
 					sprintf(msg_arr, "Alle Fragen beantwortet, bitte Warten.\n");
 					game_setStatusText(msg_arr);
-					game_setStatusIcon(0);
+					game_setStatusIcon(0); //Sanduhr oder kreuz
 				}
 
 				game_setStatusText(msg_arr);
@@ -288,7 +289,7 @@ void *listener_main(int* _sockDeskriptor){
 			case RFC_QUESTIONRESULT:
 				infoPrint("Frageauswertung erhalten!");
 
-				game_setControlsEnabled(0);
+				game_setControlsEnabled(0); //Absende button deaktivieren
 
 				if (ntohs(packet.header.length) > 0) {
 					infoPrint("Korrekte Antwort: %i", packet.content.questionresult.correct);
@@ -297,16 +298,16 @@ void *listener_main(int* _sockDeskriptor){
 					for (int i = 0; i < NUM_ANSWERS; i++) {
 						if (packet.content.questionresult.correct & (1 << i)) { // schiffte 1 um i nach links
 
-							game_markAnswerCorrect(i);
+							game_markAnswerCorrect(i); //Markiere richrige Antowrten mit einem Krzeu
 							if(!(playerSelection & (1 << i))){
-								game_highlightMistake(i);
+								game_highlightMistake(i); //Highlighten wenn Antwort richtig gewesen wäre aber nicht angeklickt wurde
 							}
 
 						} else {
 
-							game_markAnswerWrong(i);
+							game_markAnswerWrong(i); //Markiere falsche Antworten mit einem Kreuz
 							if((playerSelection & (1 << i))){ //playerSelection gibt bitweise zurück welche antworten angeklickt wurden
-								game_highlightMistake(i);
+								game_highlightMistake(i); // falsche Antworten die ausgewählt wurden
 							}
 						}
 					}
