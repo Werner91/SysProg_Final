@@ -160,7 +160,7 @@ void process_commands(int argc, char** argv) {
 void setSingleInstance(int file){
 
 	// lege Datei an
-    file = open("serverInstancePIDFile", O_WRONLY| O_CREAT, 0644);
+    file = open("serverInstancePIDFile", O_WRONLY| O_CREAT, 0644); //entweder schreiben oder erstellen
 
     struct flock lock;
 
@@ -172,14 +172,14 @@ void setSingleInstance(int file){
 
     debugPrint("Acquiring file write lock");
     /* Important: lock before doing any IO */
-    lock.l_type = F_WRLCK;
-    lock.l_whence = SEEK_SET;
-    lock.l_start = 0;
+    lock.l_type = F_WRLCK; //Schreibsperre writelock
+    lock.l_whence = SEEK_SET;//an den Dateianfang gesetzt
+    lock.l_start = 0;//an Dateianfang gesetzt
     lock.l_len = 0;
 
     // fcntl - manipulate file descriptor
     // F_GETLK, F_SETLK and F_SETLKW are used to acquire, release, and test for the existence of record locks
-    if (fcntl(file, F_SETLK, &lock) < 0) {
+    if (fcntl(file, F_SETLK, &lock) < 0) { //sperrt ganze Datei fctl(filedeskriptor unserer Datei, sperre setzen, Zeiger auf flock)
     	infoPrint("Server läuft bereits..");
     	exit(1);
     }
@@ -191,8 +191,10 @@ void setSingleInstance(int file){
     	exit(1);
     }
 
-    // hole PID des servers
+    // hole PID des Servers
     int pid = getpid();
+
+    //Schreibe PID in die Textdatei
     if (write(file, &pid, sizeof(pid)) < sizeof(pid)) {
     	debugPrint("write");
     }
@@ -274,7 +276,7 @@ void endServer(){
  * Singnal handler
  * http://www.csl.mtu.edu/cs4411.ck/www/NOTES/signal/install.html
  */
-void INThandler(int sig) {
+void INThandler(int sig) { //Interrupt Handler
 	char c = '0';
 	if(sig != SIGINT){
 		debugPrint("Signal is not SIGINT.");
