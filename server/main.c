@@ -184,19 +184,19 @@ void setSingleInstance(int file){
     	exit(1);
     }
 
-    // truncate - kuerzen
-    // ftruncate, truncate - truncate a file to a specified length
-    if (ftruncate(file, 0) < 0) {
+
+    if (ftruncate(file, 0) < 0) { //file wird auf 0 bytes beschnitten
     	infoPrint("Server läuft bereits..");
     	exit(1);
     }
 
-    // hole PID des Servers
-    int pid = getpid();
 
-    //Schreibe PID in die Textdatei
-    if (write(file, &pid, sizeof(pid)) < sizeof(pid)) {
-    	debugPrint("write");
+    /*pid holen und in datei schreiben*/
+    char pidString[32];
+    snprintf(pidString, sizeof(pidString), "%d\n", (int) getpid());
+
+    if(write(file, pidString, strlen(pidString)) < strlen(pidString)){
+    	perror("write");
     }
 
     if (fsync(file) < 0) {
