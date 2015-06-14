@@ -278,7 +278,7 @@ void endServer(){
  */
 void INThandler(int sig) { //Interrupt Handler
 	char c = '0';
-	if(sig != SIGINT){
+	if(sig != SIGINT){ //wenn Signal kein Interrupt ist (bsp. hangup)
 		debugPrint("Signal is not SIGINT.");
 		return;
 	}
@@ -384,8 +384,8 @@ int startLoader(){
 		errorPrint("Konnte Kindprozess nicht abspalten");
 		return 1;
 	}
-	else if (forkResult == 0){
-		// im Kindprozess
+	else if (forkResult == 0){  /* im Kindprozess */
+
 
 		/* Umleitung der Standardeingabe
 		 *
@@ -428,8 +428,8 @@ int startLoader(){
 		execl(program_name, program_name, "-d", catalog_dir, NULL); /* Neues Programm läuft... */
 		errorPrint("exec error"); /* ...oder auch nicht, dann war's aber ein Fehler */
 	}
-	else {
-		/* im Elternprozess */
+	else { /* im Elternprozess */
+
 
 		// Schliessen der hier nicht benoetigten Enden der Pipes
 		close(stdinPipe[0]);

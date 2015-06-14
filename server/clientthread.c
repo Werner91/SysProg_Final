@@ -35,7 +35,7 @@ void *client_thread_main(int* client_id){
 	int question_number = 0; // Fragenummer
 	int correct; // Bitmaske für richtige Antworten
 	int time_left = 0; // Zeit fuer Beantwortung der Frage
-	uint8_t selection = 5; // vom Spieler gewaehlte Antowrt
+	uint8_t selection = 5; // vom Spieler gewaehlte Antwort
 	bool time_error = false; // Flag ob ein Fehler bei der Restzeitberechnung auftrat
 
 	// hole Spielerinformationen
