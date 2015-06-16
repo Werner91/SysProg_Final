@@ -77,11 +77,15 @@ int establishConnection(int socketD_, char* port_, char* hostname_) {
 }
 
 //Login anfrage stellen
-void loginRequest(char* name) {
+void loginRequest(char *name) {
+
+	char playername[4] = "aaaa";
+	playername[3] = '\0';
+	printf("\n\nNAME: %s\n\n", name);
 	PACKET packet;
 	packet.header.type = RFC_LOGINREQUEST;
-	packet.header.length = htons(strlen(name) + 1);
-	strncpy(packet.content.loginrequest.playername, name, strlen(name));
+	packet.header.length = htons(strlen(playername));
+	memcpy(packet.content.loginrequest.playername, playername, strlen(playername ));
 	packet.content.loginrequest.RFCVersion = RFC_VERSION;
 	sendPacket(packet, socketDeskriptor);
 }
@@ -208,7 +212,7 @@ int main(int argc, char **argv){
 	//Interrupt Signalhandler setzen
 	signal(SIGINT, INThandler);
 
-	// debugEnable();
+	debugEnable();
 
 	// Parameter auswerten
 	process_client_commands(argc, argv);

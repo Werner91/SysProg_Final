@@ -1,8 +1,8 @@
 server/clientthread.o: server/clientthread.c common/util.h common/rfc.h \
  common/question.h common/networking.h common/sockets.h \
- common/networking.h common/rfc.h common/util.h server/clientthread.h \
- server/user.h server/main.h server/login.h server/score.h \
- server/catalog.h
+ common/networking.h common/rfc.h common/util.h common/../server/user.h \
+ server/clientthread.h server/user.h server/main.h server/login.h \
+ server/score.h server/catalog.h
 server/clientthread.c:
 common/util.h:
 common/rfc.h:
@@ -12,6 +12,7 @@ common/sockets.h:
 common/networking.h:
 common/rfc.h:
 common/util.h:
+common/../server/user.h:
 server/clientthread.h:
 server/user.h:
 server/main.h:

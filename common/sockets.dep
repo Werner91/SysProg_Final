@@ -1,8 +1,11 @@
 common/sockets.o: common/sockets.c common/sockets.h common/networking.h \
- common/rfc.h common/question.h common/util.h
+ common/rfc.h common/question.h common/util.h common/../server/user.h \
+ common/rfc.h
 common/sockets.c:
 common/sockets.h:
 common/networking.h:
 common/rfc.h:
 common/question.h:
 common/util.h:
+common/../server/user.h:
+common/rfc.h:

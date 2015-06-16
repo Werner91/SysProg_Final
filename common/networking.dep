@@ -1,11 +1,15 @@
-common/networking.o: common/networking.c common/networking.h common/sockets.h \
- common/rfc.h common/question.h common/util.h common/util.h \
+common/networking.o: common/networking.c server/user.h common/rfc.h \
+ common/question.h common/networking.h common/sockets.h common/rfc.h \
+ common/util.h common/../server/user.h common/util.h \
  common/../client/gui/gui_interface.h
 common/networking.c:
+server/user.h:
+common/rfc.h:
+common/question.h:
 common/networking.h:
 common/sockets.h:
 common/rfc.h:
-common/question.h:
 common/util.h:
+common/../server/user.h:
 common/util.h:
 common/../client/gui/gui_interface.h:

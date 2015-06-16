@@ -175,7 +175,7 @@ void *client_thread_main(int* client_id){
 
 						// lade Fragen des aktiven Katalogs
 						strncpy(catalog, packet.content.catalogname, ntohs(strlen(packet.content.catalogname)));
-						catalog[ntohs(strlen(packet.content.catalogname))] = '\0';
+						//catalog[ntohs(strlen(packet.content.catalogname))] = '\0';
 						loadQuestions(catalog);
 
 						// sende Paket mit aktuellem Katalog an alle Spieler

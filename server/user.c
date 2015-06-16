@@ -169,15 +169,17 @@ void sendPlayerList(){
 
 	for(int i = 0; i < user_count; i++){
 		// fuege Spieler zur Liste hinzu
+		printf("%s\n", spieler[i].name);
 		PLAYERLIST playerlist;
 		playerlist.id = spieler[i].id;
-		strncpy(playerlist.playername, spieler[i].name, strlen(spieler[i].name));
+		strncpy(playerlist.playername, spieler[i].name, PLAYER_NAME_LENGTH-1);
+		//playerlist.playername[strlen(spieler[i].name)+1] = '\0';
 		playerlist.score = htonl(spieler[i].score);
 		packet.content.playerlist[i] = playerlist;
 
 	}
 	// Laenge der Message: Anzahl der Spieler * Groeße der PLAYERLIST
-	packet.header.length = htons(sizeof(PLAYERLIST) + 37 * user_count);
+	packet.header.length = htons(sizeof(PLAYERLIST) * user_count);
 	// PlayerList an alle Clients senden
 	sendToAll(packet);
 }

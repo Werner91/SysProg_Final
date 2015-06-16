@@ -34,7 +34,7 @@
  */
 void sendPacket(PACKET packet, int socketDeskriptor) {
 	// sende Daten ueber Socket
-	size_t packetLength = sizeof(HEADER) + packet.header.length;
+	size_t packetLength = sizeof(HEADER) + ntohs(packet.header.length);
 
 	/*
 
@@ -105,7 +105,7 @@ PACKET recvPacket(int socketDeskriptor) {
 	int recv_bytes = 0;
 	int packetLength = 0;
 
-	if ((recv_bytes = recv(socketDeskriptor, &packet.header, sizeof(HEADER), 0))
+	if ((recv_bytes = recv(socketDeskriptor, &packet.header, sizeof(HEADER), MSG_WAITALL))
 			== -1) {
 		errorPrint("Empfangen des Headers fehlgeschlagen!");
 		// Fehlerpaket zurueckschicken
@@ -119,18 +119,22 @@ PACKET recvPacket(int socketDeskriptor) {
 	}
 
 	packetLength = ntohs(packet.header.length);
+	infoPrint("packetLength: %i", packetLength);
 
-	if ((recv_bytes = recv(socketDeskriptor, &packet.content, packetLength, 0))
-			== -1) {
-		errorPrint("Empfangen des Datenpakets fehlgeschlagen!");
-		// Fehlerpaket zurueckschicken
-		//char error_message[MAX_MESSAGE_LENGTH] = "Fehlerhaftes Datenpaket";
-		packet.header.type = RFC_ERRORWARNING;
-		packet.content.error.subtype = ERR_FATAL;
-		strncpy(packet.content.error.errormessage, "Fehlerhaftes Datenpaket", strlen("Fehlerhaftes Datenpaket"));
-		packet.header.length = htons(strlen("Fehlerhaftes Datenpaket") + 1);
-		return packet;
-		exit(0);
+	if(packetLength != 0)
+	{
+		if ((recv_bytes = recv(socketDeskriptor, &packet.content, packetLength, MSG_WAITALL))
+				== -1) {
+			errorPrint("Empfangen des Datenpakets fehlgeschlagen!");
+			// Fehlerpaket zurueckschicken
+			//char error_message[MAX_MESSAGE_LENGTH] = "Fehlerhaftes Datenpaket";
+			packet.header.type = RFC_ERRORWARNING;
+			packet.content.error.subtype = ERR_FATAL;
+			strncpy(packet.content.error.errormessage, "Fehlerhaftes Datenpaket", strlen("Fehlerhaftes Datenpaket"));
+			packet.header.length = htons(strlen("Fehlerhaftes Datenpaket") + 1);
+			return packet;
+			exit(0);
+		}
 	}
 
 	return packet;

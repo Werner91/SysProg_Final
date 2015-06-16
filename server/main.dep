@@ -1,7 +1,7 @@
 server/main.o: server/main.c server/main.h common/util.h common/rfc.h \
  common/question.h server/login.h server/user.h server/score.h \
  server/catalog.h common/sockets.h common/networking.h common/sockets.h \
- common/rfc.h common/util.h common/networking.h \
+ common/rfc.h common/util.h common/../server/user.h common/networking.h \
  common/server_loader_protocol.h
 server/main.c:
 server/main.h:
@@ -17,5 +17,6 @@ common/networking.h:
 common/sockets.h:
 common/rfc.h:
 common/util.h:
+common/../server/user.h:
 common/networking.h:
 common/server_loader_protocol.h:

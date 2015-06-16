@@ -74,10 +74,10 @@ void sendCatalog(int client_socket){
 	// gehe alle verfuegbaren Kataloge durch
 	for(int i=0;i<= catalog_count;i++){
 		// konvertiere Werte von host byte order zu network byte order
-		length = sizeof(HEADER) + strlen(catalog_array[i].CatalogName);
+		length = strlen(catalog_array[i].CatalogName);
 		packet.header.length = htons(length);
 		// kopiere Katalogname in Paket
-		strncpy(packet.content.catalogname, catalog_array[i].CatalogName, strlen(catalog_array[i].CatalogName));
+		strncpy(packet.content.catalogname, catalog_array[i].CatalogName, length);
 		debugPrint("Sende Katalog an Client.");
 		sendPacket(packet, client_socket);
 		length = 0;

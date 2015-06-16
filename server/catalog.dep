@@ -1,7 +1,7 @@
 server/catalog.o: server/catalog.c common/util.h common/server_loader_protocol.h \
  common/networking.h common/sockets.h common/networking.h common/rfc.h \
- common/question.h common/util.h common/rfc.h server/catalog.h \
- server/user.h
+ common/question.h common/util.h common/../server/user.h common/rfc.h \
+ server/catalog.h server/user.h
 server/catalog.c:
 common/util.h:
 common/server_loader_protocol.h:
@@ -11,6 +11,7 @@ common/networking.h:
 common/rfc.h:
 common/question.h:
 common/util.h:
+common/../server/user.h:
 common/rfc.h:
 server/catalog.h:
 server/user.h:
