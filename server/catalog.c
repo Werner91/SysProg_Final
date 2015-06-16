@@ -69,15 +69,18 @@ int addCatalog(char* name, int i){
  */
 void sendCatalog(int client_socket){
 	PACKET packet;
+	uint16_t length = 0;
 	packet.header.type = RFC_CATALOGRESPONSE;
 	// gehe alle verfuegbaren Kataloge durch
 	for(int i=0;i<= catalog_count;i++){
 		// konvertiere Werte von host byte order zu network byte order
-		packet.header.length = htons(strlen(catalog_array[i].CatalogName));
+		length = sizeof(HEADER) + strlen(catalog_array[i].CatalogName);
+		packet.header.length = htons(length);
 		// kopiere Katalogname in Paket
-		strncpy(packet.content.catalogname, catalog_array[i].CatalogName,sizeof(catalog_array[i].CatalogName));
+		strncpy(packet.content.catalogname, catalog_array[i].CatalogName, strlen(catalog_array[i].CatalogName));
 		debugPrint("Sende Katalog an Client.");
 		sendPacket(packet, client_socket);
+		length = 0;
 	}
 	// sende zum Abschluss einen leeren RFC_CATALOGRESPONSE --> alle Kataloge uebertragen
 	debugPrint("Sende leeres Katalogpacket zum Abschluss an Client.");
@@ -127,7 +130,7 @@ void setShMem(char* sh){
  * Funktion liesst von SharedMemory Fragen
  */
 Question* getQuestion(int pos){
-	Question* question = shmem + pos*(sizeof(Question));
+	Question* question = shmem + pos * (sizeof(Question));
 	return question;
 }
 

@@ -14,6 +14,7 @@
 #include "sockets.h"
 #include "rfc.h"
 #include "util.h"
+#include "../server/user.h"
 
 
 void sendPacket(PACKET, int);

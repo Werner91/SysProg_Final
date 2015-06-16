@@ -72,17 +72,19 @@ void *client_thread_main(int* client_id){
 			case RFC_ERRORWARNING:
 				// pruefe Subtyp
 				// Spieler hat das Spiel verlassen
-				if(packet.content.error.errortype == ERR_CLIENTLEFTGAME){
+
+				if(packet.content.error.subtype == ERR_WARNING){
 					debugPrint("Spieler %s (ID: %d) hat das Spiel verlassen", spieler.name, spieler.id);
 					// pruefe ob Spielleiter
 					if(is_spielleiter){
 						debugPrint("Spieler %s (ID: %d) war Spielleiter", spieler.name, spieler.id);
 						infoPrint("Der Spieleiter hat das Spiel verlassen, der Server wird beendet");
 						// setzte Fehlertyp + Text
+						//char error_message1[] = "Der Spieleiter hat das Spiel verlassen, der Server wird beendet!";
 						response.header.type = RFC_ERRORWARNING;
-						response.header.length = htons(strlen("Der Spieleiter hat das Spiel verlassen, der Server wird beendet!"));
-						response.content.error.errortype = ERR_SPIELLEITERLEFTGAME;
-						strncpy(response.content.error.errormessage,"Der Spieleiter hat das Spiel verlassen, der Server wird beendet!",	ntohs(response.header.length));
+						response.header.length = htons(strlen("Der Spieleiter hat das Spiel verlassen, der Server wird beendet!") + 1);
+						response.content.error.subtype = ERR_FATAL;
+						strncpy(response.content.error.errormessage, "Der Spieleiter hat das Spiel verlassen, der Server wird beendet!", strlen("Der Spieleiter hat das Spiel verlassen, der Server wird beendet!"));
 						// sende Fehlermeldung an alle
 						lock_user_mutex();
 						sendToAll(response);
@@ -100,10 +102,11 @@ void *client_thread_main(int* client_id){
 						// pruefe ob Spiel bereits laeft und Anzahl verbliebener Spieler
 						if((getGameRunning()) && (countUser() <= 2)){
 							// zu wenig Spieler
+							//char error_message2[] = "Zu wenig Spieler, breche Spiel ab.";
 							response.header.type = RFC_ERRORWARNING;
-							response.header.length = htons(strlen("Zu wenig Spieler, breche Spiel ab."));
-							response.content.error.errortype = ERR_TOOFEWPLAERS;
-							strncpy(response.content.error.errormessage,"Zu wenig Spieler, breche Spiel ab.",ntohs(response.header.length));
+							response.header.length = htons(strlen("Zu wenig Spieler, breche Spiel ab.") + 1);
+							response.content.error.subtype = ERR_FATAL;
+							strncpy(response.content.error.errormessage, "Zu wenig Spieler, breche Spiel ab.", strlen("Zu wenig Spieler, breche Spiel ab."));
 							// sende Fehlermeldung an alle
 							lock_user_mutex();
 							sendToAll(response);
@@ -158,10 +161,11 @@ void *client_thread_main(int* client_id){
 					// zu wenig Spieler - Spiel wird nicht gestartet
 					if(countUser() < 2){
 						infoPrint("Zu wenige Spieler um das Spiel zu starten!");
+						//char error_message3[] = "Zu wenige Spieler um das Spiel zu starten!";
 						response.header.type = RFC_ERRORWARNING;
-						response.header.length = htons(strlen("Zu wenige Spieler um das Spiel zu starten!"));
-						response.content.error.errortype = ERR_TOOFEWPLAERS;
-						strncpy(response.content.error.errormessage,"Zu wenige Spieler um das Spiel zu starten!", ntohs(response.header.length));
+						response.header.length = htons(strlen("Zu wenige Spieler um das Spiel zu starten!") + 1);
+						response.content.error.subtype = ERR_WARNING;
+						strncpy(response.content.error.errormessage, "Zu wenige Spieler um das Spiel zu starten!", strlen("Zu wenige Spieler um das Spiel zu starten!"));
 						sendPacket(response, spieler.sockDesc);
 					}
 					// genug Spieler - Spiel wird gestartet
@@ -170,8 +174,8 @@ void *client_thread_main(int* client_id){
 						char catalog[CATALOG_NAME_LENGTH];
 
 						// lade Fragen des aktiven Katalogs
-						strncpy(catalog, packet.content.catalogname,ntohs(packet.header.length));
-						catalog[ntohs(packet.header.length)] = '\0';
+						strncpy(catalog, packet.content.catalogname, ntohs(strlen(packet.content.catalogname)));
+						catalog[ntohs(strlen(packet.content.catalogname))] = '\0';
 						loadQuestions(catalog);
 
 						// sende Paket mit aktuellem Katalog an alle Spieler
@@ -180,9 +184,6 @@ void *client_thread_main(int* client_id){
 						unlock_user_mutex();
 					}
 					break;
-
-
-				case RFC_QUESTIONANSWERED:
 
 
 				// Spieler fordert Frage an
@@ -201,11 +202,11 @@ void *client_thread_main(int* client_id){
 						QuestionMessage quest_message;
 
 						// kopiere Frage + Antworten + Timeout
-						strcpy(quest_message.question, shmQ->question);
-						strcpy(quest_message.answers[0], shmQ->answers[0]);
-						strcpy(quest_message.answers[1], shmQ->answers[1]);
-						strcpy(quest_message.answers[2], shmQ->answers[2]);
-						strcpy(quest_message.answers[3], shmQ->answers[3]);
+						strncpy(quest_message.question, shmQ->question, strlen(shmQ->question));
+						strncpy(quest_message.answers[0], shmQ->answers[0], strlen(shmQ->answers[0]));
+						strncpy(quest_message.answers[1], shmQ->answers[1], strlen(shmQ->answers[1]));
+						strncpy(quest_message.answers[2], shmQ->answers[2], strlen(shmQ->answers[2]));
+						strncpy(quest_message.answers[3], shmQ->answers[3], strlen(shmQ->answers[3]));
 						quest_message.timeout = shmQ->timeout;
 
 						// versende Fragenpaket + aktualisierte Spielerliste

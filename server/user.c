@@ -25,6 +25,9 @@
 #include <pthread.h>
 
 
+int anzahlUser;
+
+
 // Array fuer die Spielerverwaltung
 PLAYER spieler[MAX_PLAYERS];
 
@@ -168,13 +171,13 @@ void sendPlayerList(){
 		// fuege Spieler zur Liste hinzu
 		PLAYERLIST playerlist;
 		playerlist.id = spieler[i].id;
-		strncpy(playerlist.playername, spieler[i].name, PLAYER_NAME_LENGTH);
+		strncpy(playerlist.playername, spieler[i].name, strlen(spieler[i].name));
 		playerlist.score = htonl(spieler[i].score);
 		packet.content.playerlist[i] = playerlist;
 
 	}
 	// Laenge der Message: Anzahl der Spieler * Groeße der PLAYERLIST
-	packet.header.length = htons(sizeof(PLAYERLIST) * user_count);
+	packet.header.length = htons(sizeof(PLAYERLIST) + 37 * user_count);
 	// PlayerList an alle Clients senden
 	sendToAll(packet);
 }
@@ -193,6 +196,7 @@ int countUser(){
 		}
 	}
 	// gebe Anzahl an Spielern zurueck
+	anzahlUser = current_user_count;
 	return current_user_count;
 }
 
@@ -278,7 +282,7 @@ void sendGameOver(int id){
 		for(int j=0;j<countUser();j++){
 			PACKET packet;
 			packet.header.type = RFC_GAMEOVER;
-			packet.header.length = htons(1);
+			packet.header.length = htons(sizeof(HEADER) + 1);
 			packet.content.playerrank = j + 1;
 			sendPacket(packet, spieler[j].sockDesc);
 		}

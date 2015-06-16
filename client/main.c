@@ -80,11 +80,9 @@ int establishConnection(int socketD_, char* port_, char* hostname_) {
 void loginRequest(char* name) {
 	PACKET packet;
 	packet.header.type = RFC_LOGINREQUEST;
-	//packet.header.length = htons(sizeof(name));
-	packet.header.length = htons(strlen(name)+1);
-	strncpy(packet.content.loginrequest.playername, name, ntohs(packet.header.length));
+	packet.header.length = htons(strlen(name) + 1);
+	strncpy(packet.content.loginrequest.playername, name, strlen(name));
 	packet.content.loginrequest.RFCVersion = RFC_VERSION;
-	// sende Nachricht
 	sendPacket(packet, socketDeskriptor);
 }
 
@@ -188,13 +186,14 @@ void INThandler(int sig) {
 	else {
 		infoPrint("Der Client wird beendet ");
 		  PACKET packet;
-		    packet.header.type = RFC_ERRORWARNING;
-		    packet.header.length = htons(strlen("Der Spieler hat das Spiel verlassen!"));
-		    packet.content.error.errortype = ERR_CLIENTLEFTGAME;
-		    strncpy(packet.content.error.errormessage,"Der Spieler hat das Spiel verlassen!",ntohs(packet.header.length));
-		    sendPacket(packet, socketDeskriptor);
+		  char msg[] = "Der Spieler hat das Spiel verlassen!";
+		  packet.header.type = RFC_ERRORWARNING;
+		  packet.header.length = htons(1 + strlen(msg));
+		  packet.content.error.subtype = ERR_FATAL;
+		  strncpy(packet.content.error.errormessage, msg, strlen(msg));
+		  sendPacket(packet, socketDeskriptor);
 
-		    guiQuit();
+		  guiQuit();
 	}
 }
 
@@ -285,10 +284,11 @@ void preparation_onStartClicked(const char *currentSelection) {
 void preparation_onWindowClosed(void) {
 	debugPrint("Vorbereitungsfenster geschlossen");
     PACKET packet;
+    char msg[] = "Der Spieler hat das Spiel verlassen!";
     packet.header.type = RFC_ERRORWARNING;
-    packet.header.length = htons(strlen("Der Spieler hat das Spiel verlassen!"));
-    packet.content.error.errortype = ERR_CLIENTLEFTGAME;
-    strncpy(packet.content.error.errormessage,"Der Spieler hat das Spiel verlassen!",ntohs(packet.header.length));
+    packet.header.length = htons(strlen(msg));
+    packet.content.error.subtype = ERR_FATAL;
+    strncpy(packet.content.error.errormessage, msg, strlen(msg));
     sendPacket(packet, socketDeskriptor);
 
     guiQuit();
@@ -317,10 +317,11 @@ void game_onSubmitClicked(unsigned char selectedAnswers)
 void game_onWindowClosed(void) {
 	debugPrint("Spielfenster geschlossen");
     PACKET packet;
+    char errmsg[] = "Der Spieler hat das Spiel verlassen!";
     packet.header.type = RFC_ERRORWARNING;
-    packet.header.length = htons(strlen("Der Spieler hat das Spiel verlassen!"));
-    packet.content.error.errortype = ERR_CLIENTLEFTGAME;
-    strncpy(packet.content.error.errormessage,"Der Spieler hat das Spiel verlassen!",ntohs(packet.header.length));
+    packet.header.length = htons(strlen(errmsg));
+    packet.content.error.subtype = ERR_FATAL;
+    strncpy(packet.content.error.errormessage, errmsg,strlen(errmsg));
     sendPacket(packet, socketDeskriptor);
     guiQuit();
 }

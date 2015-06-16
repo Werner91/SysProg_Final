@@ -38,12 +38,15 @@
 #define ERR_FATAL 1
 
 // selbst definierte Warnung-/Fehlertypen + Konstanten ('ersetzen ERR_WARNUNG / FATAL)
+/*
 #define ERR_MAXCOUNTPLAYERREACHED 101
 #define ERR_PLAYERNAMEEXIST 102
 #define ERR_GAMEISRUNNING 103
 #define ERR_SPIELLEITERLEFTGAME 104
 #define ERR_TOOFEWPLAERS 105
 #define ERR_CLIENTLEFTGAME 107
+*/
+
 
 // max. Laenge Spielername (inkl. '\0')
 #define PLAYER_NAME_LENGTH 32
@@ -78,7 +81,7 @@ typedef struct {
 
 // Errortype + Errormessage
 typedef struct {
-	 uint8_t errortype;
+	 uint8_t subtype;
 	 char errormessage[MAX_MESSAGE_LENGTH];
 } ERROR;
 

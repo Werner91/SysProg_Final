@@ -8,12 +8,14 @@
  *
  */
 
+#include "server/user.h"
 #include "networking.h"
 #include "sockets.h"
 #include "common/util.h"
 #include "rfc.h"
 #include "util.h"
 #include "../client/gui/gui_interface.h"
+#include "../server/user.h"
 
 #include <netinet/in.h>
 #include <stdlib.h>
@@ -25,64 +27,111 @@
 #include <netdb.h>
 #include <unistd.h>
 
-
-
 /*
  * versende Nachricht ueber Socket
  * param PACKET packet Nachricht die versendet werden soll
  * int socketDeskriptor Socketdeskriptor ueber den die Nachricht versendet wird
  */
-void sendPacket(PACKET packet, int socketDeskriptor){
+void sendPacket(PACKET packet, int socketDeskriptor) {
 	// sende Daten ueber Socket
-	if(send(socketDeskriptor, &packet, ntohs(packet.header.length)+3,0) == -1){
+	size_t packetLength = sizeof(HEADER) + packet.header.length;
+
+	/*
+
+	 switch (packet.header.type) {
+	 case RFC_LOGINREQUEST:
+	 packetLength = sizeof(HEADER) + strlen(packet.content.loginrequest.playername) + 1;
+	 break;
+	 case RFC_LOGINRESPONSEOK:
+	 packetLength = sizeof(HEADER) + 2;
+	 break;
+	 case RFC_CATALOGREQUEST:
+	 packetLength = sizeof(HEADER);
+	 break;
+	 case RFC_CATALOGRESPONSE:
+	 packetLength = sizeof(HEADER) + strlen(packet.content.catalogname);
+	 break;
+	 case RFC_CATALOGCHANGE:
+	 packetLength = sizeof(HEADER) + strlen(packet.content.catalogname);
+	 break;
+	 case RFC_PLAYERLIST:
+	 packetLength = sizeof(HEADER) + (37 * userCount);
+	 break;
+	 case RFC_STARTGAME:
+	 packetLength = sizeof(HEADER) + strlen(packet.content.catalogname);
+	 break;
+	 case RFC_QUESTIONREQUEST:
+	 packetLength = sizeof(HEADER);
+	 break;
+	 case RFC_QUESTION:
+	 packetLength = sizeof(HEADER) + sizeof(QuestionMessage);
+	 break;
+	 case RFC_QUESTIONANSWERED:
+	 packetLength = sizeof(HEADER) + 1;
+	 break;
+	 case RFC_QUESTIONRESULT:
+	 packetLength = sizeof(HEADER) + 2;
+	 break;
+	 case RFC_GAMEOVER:
+	 packetLength = sizeof(HEADER) + 1;
+	 break;
+	 case RFC_ERRORWARNING:
+	 packetLength = sizeof(HEADER) + 1 + strlen(packet.content.error.errormessage);
+	 break;
+	 default:
+	 errorPrint("Fehlerhafter Pakettyp");
+	 packetLength = -1;
+	 break;
+	 }
+	 */
+
+	if (send(socketDeskriptor, &packet, packetLength, 0) == -1) {
 		errorPrint("Senden der Daten fehlgeschlagen!");
 		exit(0);
-	}
-	else {
+
+	} else {
 		// Testweise ausgeben welcher Typ an welchen Socket versendet wurde
-		infoPrint("Nachicht vom Type %i an die Socket-ID: %i gesendet", packet.header.type, socketDeskriptor);
+		infoPrint("Nachicht vom Type %i an die Socket-ID: %i gesendet",
+				packet.header.type, socketDeskriptor);
 	}
-
 }
-
-
 /*
  * Nachricht ueber Socket empfangen
  * param int socketDeskriptor Socketdeskriptor ueber den Nachricht empfangen wird *
  */
-PACKET recvPacket (int socketDeskriptor){
+PACKET recvPacket(int socketDeskriptor) {
 
 	PACKET packet;
 	int recv_bytes = 0;
+	int packetLength = 0;
 
-	// empfange Header
-	// stimmt die Anzahl an empfangen Daten mit der Groese des Headers ueberrein?
-	if((recv_bytes = recv(socketDeskriptor, &packet.header, sizeof(packet.header), MSG_WAITALL)) != sizeof(packet.header)){
-		errorPrint("Fehlerhafter Header empfangen. Anzahl empfangener Bytes: %d ", recv_bytes);
-		// gebe Fehlerpaket zurueck
-		// setzte Header + Errortype + Fehlernachricht
-		char error_message[] = "Fehlerhafte uebertragung der Daten, Verbindung unterbrochen!";
+	if ((recv_bytes = recv(socketDeskriptor, &packet.header, sizeof(HEADER), 0))
+			== -1) {
+		errorPrint("Empfangen des Headers fehlgeschlagen!");
+		// Fehlerpaket zurueckschicken
+		//char error_message[MAX_MESSAGE_LENGTH] = "Fehlerhafte uebertragung der Daten, Verbindung unterbrochen!";
 		packet.header.type = RFC_ERRORWARNING;
-		packet.content.error.errortype = ERR_FATAL;
-		strcpy(packet.content.error.errormessage, error_message);
-		packet.header.length = htons(3 + strlen(error_message) + 1);
+		packet.content.error.subtype = ERR_FATAL;
+		strncpy(packet.content.error.errormessage, "Fehlerhafte uebertragung der Daten, Verbindung unterbrochen!", strlen("Fehlerhafte uebertragung der Daten, Verbindung unterbrochen!"));
+		packet.header.length = htons(strlen("Fehlerhafte uebertragung der Daten, Verbindung unterbrochen!") + 1);
 		return packet;
+		exit(0);
 	}
-	// empfange Content
-	if(htons(packet.header.length)){
-		// stimmt die Anzahl an empfangen Daten mit der Groesenangabe im Paket ueberrein?
-		if((recv_bytes = recv(socketDeskriptor, &packet.content, htons(packet.header.length), MSG_WAITALL)) != htons(packet.header.length)){
-			errorPrint("Fehlerhaftes Datenpaket empfangen. Anzahl empfangener Bytes: %d ", recv_bytes);
-			// gebe Fehlerpaket  zurueck
-			// setzte Header + Errortype + Fehlernachricht
-			char error_message[] = "Fehlerhaftes Datenpacket";
-			packet.header.type = RFC_ERRORWARNING;
-			packet.content.error.errortype = ERR_FATAL;
-			strcpy(packet.content.error.errormessage, error_message);
-			packet.header.length = htons(3 + strlen(error_message) + 1);
-			return packet;
-		}
+
+	packetLength = ntohs(packet.header.length);
+
+	if ((recv_bytes = recv(socketDeskriptor, &packet.content, packetLength, 0))
+			== -1) {
+		errorPrint("Empfangen des Datenpakets fehlgeschlagen!");
+		// Fehlerpaket zurueckschicken
+		//char error_message[MAX_MESSAGE_LENGTH] = "Fehlerhaftes Datenpaket";
+		packet.header.type = RFC_ERRORWARNING;
+		packet.content.error.subtype = ERR_FATAL;
+		strncpy(packet.content.error.errormessage, "Fehlerhaftes Datenpaket", strlen("Fehlerhaftes Datenpaket"));
+		packet.header.length = htons(strlen("Fehlerhaftes Datenpaket") + 1);
+		return packet;
+		exit(0);
 	}
-	// empfangen war erfolgreich, gebe Packet zurueck
+
 	return packet;
 }

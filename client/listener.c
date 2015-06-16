@@ -42,9 +42,9 @@ void receiveCatalogList(PACKET _packet) {
     // Antwort auswerten und anzeigen
     if(ntohs(_packet.header.length) > 0){
         infoPrint("%s", _packet.content.catalogname);
-    	char buffer_array[ntohs(_packet.header.length)];
-	    strncpy(buffer_array, _packet.content.catalogname,ntohs(_packet.header.length));
-	    buffer_array[ntohs(_packet.header.length)] = '\0';
+    	char buffer_array[strlen(_packet.content.catalogname)];
+	    strncpy(buffer_array, _packet.content.catalogname,strlen(_packet.content.catalogname));
+	    buffer_array[strlen(_packet.content.catalogname)] = '\0';
 	    preparation_addCatalog(buffer_array);
     }
 }
@@ -63,7 +63,7 @@ void receivePlayerlist(PACKET _packet){
 	SPIELER userlist[MAX_PLAYERS];
 	int spielerzahl = 0;
 
-	spielerzahl = ntohs(_packet.header.length)/37; // 37 == Groesse PLAYERLIST 1 Spieler
+	spielerzahl = (ntohs(_packet.header.length) - sizeof(HEADER)) / 37; // 37 == Groesse PLAYERLIST 1 Spieler
 	infoPrint("\n\nAnzahl Spieler in der Playerlist: %i\n\n",spielerzahl);
 
 	// Playerlist leeren (GUI)
@@ -99,14 +99,14 @@ void receivePlayerlist(PACKET _packet){
 		// schreibe Spieler_ID in Spielerliste
 		userlist[i].id = _packet.content.playerlist[i].id;
 		// mehr als 4 Spieler? -> Fehlermeldung
-		printf("Spielerliste: %s\n",_packet.content.playerlist[i].playername );
+		printf("Spielerliste: %s\n",_packet.content.playerlist[i].playername);
 		if(i > MAX_PLAYERS){
 			infoPrint("Maximale Anzahl an Spieler erreicht!");
 			exit(1);
 		}
 
 		// kopiere Name aus Paket in Spielerliste
-		strncpy(userlist[i].name, _packet.content.playerlist[i].playername,PLAYER_NAME_LENGTH);
+		strncpy(userlist[i].name, _packet.content.playerlist[i].playername, strlen(_packet.content.playerlist[i].playername));
 
 		// Ausgabe der angemeldeten Spielernamen
 		infoPrint("%s ist angemeldet", userlist[i].name);
@@ -133,18 +133,19 @@ void receivePlayerlist(PACKET _packet){
 int receiveErrorMessage (PACKET _packet){
 	char error_message[MAX_MESSAGE_LENGTH];
 	// hole Errornachricht
-	strncpy (error_message, _packet.content.error.errormessage, ntohs (_packet.header.length)-1);
+	strncpy (error_message, _packet.content.error.errormessage, strlen(_packet.content.error.errormessage));
 	// Nullterminierung
-	error_message[ntohs (_packet.header.length)-1]= '\0';
+	error_message[strlen(_packet.content.error.errormessage)]= '\0';
 	// zeige Errordialog + gebe Fehler auf Konsole aus
 	// beende Client falls fataler Error
-	if(_packet.content.error.errortype == ERR_SPIELLEITERLEFTGAME){
+	if(_packet.content.error.subtype == ERR_FATAL){
 		guiShowErrorDialog(error_message, 1);
 		return 1; //Der Rückgabewert 1 Beendet die Endlosschleife in der listener_main
-	} else if (_packet.content.error.errortype == ERR_FATAL) {
+	/*} else if (_packet.content.error.subtype == ERR_FATAL) {
 		guiShowErrorDialog(error_message, 1); // GUI wird beendet und Dialogbox für fehler ausgegeben
+		*/
 		return 1; //Der Rückgabewert 1 Beendet die Endlosschleife in der listener_main
-	} else if ((_packet.content.error.errortype == ERR_TOOFEWPLAERS) && game_is_running) {
+	} else if ((_packet.content.error.subtype == ERR_FATAL) && game_is_running) {
 		guiShowMessageDialog(error_message, 0);
 	}
 
@@ -162,9 +163,9 @@ int receiveErrorMessage (PACKET _packet){
  */
 void receiveCatalogChange(PACKET _packet){
   if (ntohs(_packet.header.length) > 0) {
-    char buffer_array[ntohs(_packet.header.length)];
-    strncpy(buffer_array, _packet.content.catalogname, ntohs(_packet.header.length));
-    buffer_array[ntohs(_packet.header.length)] = '\0';
+    char buffer_array[strlen(_packet.content.catalogname)];
+    strncpy(buffer_array, _packet.content.catalogname, strlen(_packet.content.catalogname));
+    buffer_array[strlen(_packet.content.catalogname)] = '\0';
     preparation_selectCatalog(buffer_array);
   }
 }
@@ -179,7 +180,7 @@ void receiveCatalogChange(PACKET _packet){
 void questionRequest(int _socketDeskriptor){
 	PACKET packet;
 	packet.header.type = RFC_QUESTIONREQUEST;
-	packet.header.length = 0;
+	packet.header.length = ntohs(0);
 	sendPacket(packet, _socketDeskriptor);
 	infoPrint("Question Request versendet!");
 }
@@ -200,10 +201,10 @@ void *listener_main(int* _sockDeskriptor){
     }
 	// RFC_ERRORWARNING
     else if(response.header.type == RFC_ERRORWARNING){
-        char message[(ntohs(response.header.length))];
-        strncpy(message, response.content.error.errormessage,ntohs(response.header.length) - 1);
+        char message[strlen(response.content.error.errormessage)];
+        strncpy(message, response.content.error.errormessage, strlen(response.content.error.errormessage));
         // Nullterminierung des Arrays
-        message[ntohs(response.header.length) - 1] = '\0';
+        message[strlen(response.content.error.errormessage)] = '\0';
         // zeige in GUI Fehlermeldung an
         infoPrint("Fehler: %s\n", message);
         //guiShowErrorDialog(message, response.content.error.errortype);
@@ -214,7 +215,7 @@ void *listener_main(int* _sockDeskriptor){
     else {
         // zeige in GUI Fehlermeldung an
         infoPrint("Verbindung zum Server verloren!");
-        guiShowErrorDialog("Verbindung zum Server verloren!", response.content.error.errortype);
+        guiShowErrorDialog("Verbindung zum Server verloren!", response.content.error.subtype);
         guiQuit();
         exit(0);
     }
@@ -335,7 +336,7 @@ void *listener_main(int* _sockDeskriptor){
 				break;
 			// RFC_ERRORWARNING
 			case RFC_ERRORWARNING:
-				if(packet.content.error.errortype == ERR_TOOFEWPLAERS){
+				if(packet.content.error.subtype == ERR_WARNING){
 					guiShowMessageDialog("Zu wenig Spieler um das Spiel zu starten", 0);
 				}
 

@@ -226,7 +226,7 @@ void endServer(){
 		close_server_packet.header.type = RFC_ERRORWARNING;
 		close_server_packet.header.length = htons(sizeof(ERROR));
 		//close_server_packet.content.error.errortype = ERR_SERVER_CLOSE;
-		close_server_packet.content.error.errortype = ERR_FATAL;
+		close_server_packet.content.error.subtype = ERR_FATAL;
 		strncpy(close_server_packet.content.error.errormessage, "Server beendet", 100);
 		// sende Nachricht
 		sendToAll(close_server_packet);

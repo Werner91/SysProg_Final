@@ -86,17 +86,17 @@ void* login_main(int sock){
 					if(client_id == -1){
 						errorPrint("Name bereits vorhanden");
 						response.header.type = RFC_ERRORWARNING;
-						response.header.length = htons(sizeof(ERROR));
-						response.content.error.errortype = ERR_PLAYERNAMEEXIST;
-						strncpy(response.content.error.errormessage, "Name bereits vorhanden", MAX_MESSAGE_LENGTH);
+						response.header.length = htons(strlen("Name bereits vorhanden") + 1);
+						response.content.error.subtype = ERR_FATAL;
+						strncpy(response.content.error.errormessage, "Name bereits vorhanden", strlen("Name bereits vorhanden"));
 					}
 					// Zu viele Spieler angemeldet
 					else if(client_id >= MAX_PLAYERS){
 						errorPrint("Maximale Anzahl an Spielern erreicht!");
 						response.header.type = RFC_ERRORWARNING;
-						response.header.length = htons(sizeof(ERROR));
-						response.content.error.errortype = ERR_MAXCOUNTPLAYERREACHED;
-						strncpy(response.content.error.errormessage, "Maximale Anzahl an Spielern erreicht!", MAX_MESSAGE_LENGTH);
+						response.header.length = htons(strlen("Maximale Anzahl an Spielern erreicht!"));
+						response.content.error.subtype = ERR_FATAL;
+						strncpy(response.content.error.errormessage, "Maximale Anzahl an Spielern erreicht!", strlen("Maximale Anzahl an Spielern erreicht!"));
 					}
 					// ID ok - RFC_LOGINRESPONSEOK
 					else {
@@ -122,11 +122,11 @@ void* login_main(int sock){
 				}
 				// Spiel laeft bereits - keine Anmeldung moeglich
 				else {
-					errorPrint("Spiel laeft bereits, Client kann nicht angemeldet werden");
+					errorPrint("Spiel laeuft bereits, Client kann nicht angemeldet werden");
 					response.header.type = RFC_ERRORWARNING;
-					response.header.length = htons(sizeof(ERROR));
-					response.content.error.errortype = ERR_GAMEISRUNNING;
-					strncpy(response.content.error.errormessage, "Spiel laeft bereits, Client kann nicht angemeldet werden", MAX_MESSAGE_LENGTH);
+					response.header.length = htons(strlen("Spiel laeuft bereits, Client kann nicht angemeldet werden") + 1);
+					response.content.error.subtype = ERR_FATAL;
+					strncpy(response.content.error.errormessage, "Spiel laeuft bereits, Client kann nicht angemeldet werden", strlen("Spiel laeuft bereits, Client kann nicht angemeldet werden"));
 					// sende Antwort
 					sendPacket(response, client_socket);
 				}
