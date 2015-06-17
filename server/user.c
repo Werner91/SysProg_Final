@@ -63,7 +63,7 @@ void initSpielerverwaltung(){
  */
 int addPlayer(char *name, int length, int sock){
 	debugPrint("Fuege Spieler zur Verwaltung hinzu.");
-	name[length] = 0;
+	name[length] = '\0';
 	int current_count_user = countUser();
 	// sind noch freie Spielerplaetze vorhanden
 	if(current_count_user >= MAX_PLAYERS){
@@ -72,14 +72,14 @@ int addPlayer(char *name, int length, int sock){
 	else {
 		// pruefe auf gleichen Namen
 		for(int i = 0; i < current_count_user; i++){
-			if(strncmp(spieler[i].name, name, length + 1) == 0){
+			if(strncmp(spieler[i].name, name, length) == 0){
 				return -1;
 			}
 		}
 		// fuege Spieler zur Verwaltung hinzu
 		int new_id = current_count_user;
 		spieler[new_id].id = new_id;
-		strncpy(spieler[new_id].name, name, length + 1);
+		strncpy(spieler[new_id].name, name, PLAYER_NAME_LENGTH);
 		spieler[new_id].sockDesc = sock;
 		// gebe Spieler-ID zurueck
 		return new_id;
@@ -172,7 +172,7 @@ void sendPlayerList(){
 		printf("%s\n", spieler[i].name);
 		PLAYERLIST playerlist;
 		playerlist.id = spieler[i].id;
-		strncpy(playerlist.playername, spieler[i].name, PLAYER_NAME_LENGTH-1);
+		strncpy(playerlist.playername, spieler[i].name, PLAYER_NAME_LENGTH);
 		//playerlist.playername[strlen(spieler[i].name)+1] = '\0';
 		playerlist.score = htonl(spieler[i].score);
 		packet.content.playerlist[i] = playerlist;

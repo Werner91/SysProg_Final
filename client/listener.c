@@ -43,8 +43,8 @@ void receiveCatalogList(PACKET _packet) {
     if(ntohs(_packet.header.length) > 0){
         infoPrint("%s", _packet.content.catalogname);
     	char buffer_array[strlen(_packet.content.catalogname)];
-	    strncpy(buffer_array, _packet.content.catalogname,strlen(_packet.content.catalogname));
-	    buffer_array[strlen(_packet.content.catalogname)] = '\0';
+	    strncpy(buffer_array, _packet.content.catalogname, CATALOG_NAME_LENGTH);
+	    buffer_array[CATALOG_NAME_LENGTH-1] = '\0';
 	    preparation_addCatalog(buffer_array);
     }
 }
@@ -63,7 +63,7 @@ void receivePlayerlist(PACKET _packet){
 	SPIELER userlist[MAX_PLAYERS];
 	int spielerzahl = 0;
 
-	spielerzahl = (ntohs(_packet.header.length) - sizeof(HEADER)) / 37; // 37 == Groesse PLAYERLIST 1 Spieler
+	spielerzahl = ntohs(_packet.header.length) / 37; // 37 == Groesse PLAYERLIST 1 Spieler
 	infoPrint("\n\nAnzahl Spieler in der Playerlist: %i\n\n",spielerzahl);
 
 	// Playerlist leeren (GUI)
@@ -106,7 +106,8 @@ void receivePlayerlist(PACKET _packet){
 		}
 
 		// kopiere Name aus Paket in Spielerliste
-		strncpy(userlist[i].name, _packet.content.playerlist[i].playername, strlen(_packet.content.playerlist[i].playername));
+		strncpy(userlist[i].name, _packet.content.playerlist[i].playername, PLAYER_NAME_LENGTH);
+		userlist[i].name[PLAYER_NAME_LENGTH-1] = '\0';
 
 		// Ausgabe der angemeldeten Spielernamen
 		infoPrint("%s ist angemeldet", userlist[i].name);

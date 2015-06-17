@@ -79,14 +79,12 @@ int establishConnection(int socketD_, char* port_, char* hostname_) {
 //Login anfrage stellen
 void loginRequest(char *name) {
 
-	char playername[4] = "aaaa";
-	playername[3] = '\0';
 	printf("\n\nNAME: %s\n\n", name);
 	PACKET packet;
 	packet.header.type = RFC_LOGINREQUEST;
-	packet.header.length = htons(strlen(playername));
-	memcpy(packet.content.loginrequest.playername, playername, strlen(playername ));
+	packet.header.length = htons(strlen(name)+1);
 	packet.content.loginrequest.RFCVersion = RFC_VERSION;
+	memcpy(packet.content.loginrequest.playername, name, strlen(name));
 	sendPacket(packet, socketDeskriptor);
 }
 
