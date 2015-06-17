@@ -84,7 +84,7 @@ void *client_thread_main(int* client_id){
 						response.header.type = RFC_ERRORWARNING;
 						response.header.length = htons(strlen("Der Spieleiter hat das Spiel verlassen, der Server wird beendet!") + 1);
 						response.content.error.subtype = ERR_FATAL;
-						strncpy(response.content.error.errormessage, "Der Spieleiter hat das Spiel verlassen, der Server wird beendet!", strlen("Der Spieleiter hat das Spiel verlassen, der Server wird beendet!"));
+						strncpy(response.content.error.errormessage, "Der Spieleiter hat das Spiel verlassen, der Server wird beendet!", strlen("Der Spieleiter hat das Spiel verlassen, der Server wird beendet!") + 1);
 						// sende Fehlermeldung an alle
 						lock_user_mutex();
 						sendToAll(response);
@@ -106,7 +106,7 @@ void *client_thread_main(int* client_id){
 							response.header.type = RFC_ERRORWARNING;
 							response.header.length = htons(strlen("Zu wenig Spieler, breche Spiel ab.") + 1);
 							response.content.error.subtype = ERR_FATAL;
-							strncpy(response.content.error.errormessage, "Zu wenig Spieler, breche Spiel ab.", strlen("Zu wenig Spieler, breche Spiel ab."));
+							strncpy(response.content.error.errormessage, "Zu wenig Spieler, breche Spiel ab.", strlen("Zu wenig Spieler, breche Spiel ab.")+1);
 							// sende Fehlermeldung an alle
 							lock_user_mutex();
 							sendToAll(response);

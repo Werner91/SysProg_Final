@@ -266,7 +266,7 @@ void preparation_onCatalogChanged(const char *newSelection) {
     PACKET packet;
     packet.header.type = RFC_CATALOGCHANGE;
     packet.header.length = htons(strlen(newSelection));
-    strncpy(packet.content.catalogname, newSelection, strlen(newSelection));
+    strncpy(packet.content.catalogname, newSelection, ntohs(packet.header.length));
     sendPacket(packet, socketDeskriptor);
     fflush(stdout);
 }
@@ -277,20 +277,20 @@ void preparation_onStartClicked(const char *currentSelection) {
     PACKET packet;
     packet.header.type = RFC_STARTGAME;
     packet.header.length = htons(strlen(currentSelection));
-    //preparation_hideWindow();
     strncpy(packet.content.catalogname, currentSelection, strlen(currentSelection));
     sendPacket(packet, socketDeskriptor);
 }
 
 // Wenn das Loginfenster geschlossen wird
 void preparation_onWindowClosed(void) {
+
 	debugPrint("Vorbereitungsfenster geschlossen");
     PACKET packet;
     char msg[] = "Der Spieler hat das Spiel verlassen!";
     packet.header.type = RFC_ERRORWARNING;
-    packet.header.length = htons(strlen(msg));
+    packet.header.length = htons(strlen(msg) + 1);
     packet.content.error.subtype = ERR_FATAL;
-    strncpy(packet.content.error.errormessage, msg, strlen(msg));
+    strncpy(packet.content.error.errormessage, msg, ntohs(packet.header.length));
     sendPacket(packet, socketDeskriptor);
 
     guiQuit();

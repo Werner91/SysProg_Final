@@ -163,10 +163,20 @@ int receiveErrorMessage (PACKET _packet){
  * setzt diesen in der GUI auf aktiv
  */
 void receiveCatalogChange(PACKET _packet){
+	/*
   if (ntohs(_packet.header.length) > 0) {
     char buffer_array[strlen(_packet.content.catalogname)];
     strncpy(buffer_array, _packet.content.catalogname, strlen(_packet.content.catalogname));
     buffer_array[strlen(_packet.content.catalogname)] = '\0';
+    preparation_selectCatalog(buffer_array);
+  }
+  */
+
+  if (ntohs(_packet.header.length) > 0) {
+	int length = ntohs(_packet.header.length);
+    char buffer_array[length + 1];
+    strncpy(buffer_array, _packet.content.catalogname, length);
+    buffer_array[length] = '\0';
     preparation_selectCatalog(buffer_array);
   }
 }

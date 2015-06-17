@@ -33,57 +33,7 @@
  * int socketDeskriptor Socketdeskriptor ueber den die Nachricht versendet wird
  */
 void sendPacket(PACKET packet, int socketDeskriptor) {
-	// sende Daten ueber Socket
 	size_t packetLength = sizeof(HEADER) + ntohs(packet.header.length);
-
-	/*
-
-	 switch (packet.header.type) {
-	 case RFC_LOGINREQUEST:
-	 packetLength = sizeof(HEADER) + strlen(packet.content.loginrequest.playername) + 1;
-	 break;
-	 case RFC_LOGINRESPONSEOK:
-	 packetLength = sizeof(HEADER) + 2;
-	 break;
-	 case RFC_CATALOGREQUEST:
-	 packetLength = sizeof(HEADER);
-	 break;
-	 case RFC_CATALOGRESPONSE:
-	 packetLength = sizeof(HEADER) + strlen(packet.content.catalogname);
-	 break;
-	 case RFC_CATALOGCHANGE:
-	 packetLength = sizeof(HEADER) + strlen(packet.content.catalogname);
-	 break;
-	 case RFC_PLAYERLIST:
-	 packetLength = sizeof(HEADER) + (37 * userCount);
-	 break;
-	 case RFC_STARTGAME:
-	 packetLength = sizeof(HEADER) + strlen(packet.content.catalogname);
-	 break;
-	 case RFC_QUESTIONREQUEST:
-	 packetLength = sizeof(HEADER);
-	 break;
-	 case RFC_QUESTION:
-	 packetLength = sizeof(HEADER) + sizeof(QuestionMessage);
-	 break;
-	 case RFC_QUESTIONANSWERED:
-	 packetLength = sizeof(HEADER) + 1;
-	 break;
-	 case RFC_QUESTIONRESULT:
-	 packetLength = sizeof(HEADER) + 2;
-	 break;
-	 case RFC_GAMEOVER:
-	 packetLength = sizeof(HEADER) + 1;
-	 break;
-	 case RFC_ERRORWARNING:
-	 packetLength = sizeof(HEADER) + 1 + strlen(packet.content.error.errormessage);
-	 break;
-	 default:
-	 errorPrint("Fehlerhafter Pakettyp");
-	 packetLength = -1;
-	 break;
-	 }
-	 */
 
 	if (send(socketDeskriptor, &packet, packetLength, 0) == -1) {
 		errorPrint("Senden der Daten fehlgeschlagen!");
