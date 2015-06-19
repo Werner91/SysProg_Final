@@ -25,7 +25,7 @@
 #include <pthread.h>
 
 
-int anzahlUser;
+//int anzahlUser;
 
 
 // Array fuer die Spielerverwaltung
@@ -65,22 +65,33 @@ int addPlayer(char *name, int length, int sock){
 	debugPrint("Fuege Spieler zur Verwaltung hinzu.");
 	name[length] = '\0';
 	int current_count_user = countUser();
+
+
 	// sind noch freie Spielerplaetze vorhanden
 	if(current_count_user >= MAX_PLAYERS){
 		return MAX_PLAYERS;
 	}
 	else {
+		char is_free[MAX_PLAYERS];
+		for(int i=0; i<MAX_PLAYERS; ++i)
+			is_free[i] = 1;
+
 		// pruefe auf gleichen Namen
 		for(int i = 0; i < current_count_user; i++){
+			is_free[spieler[i].id] = 0;
 			if(strncmp(spieler[i].name, name, length) == 0){
 				return -1;
 			}
 		}
+
 		// fuege Spieler zur Verwaltung hinzu
-		int new_id = current_count_user;
-		spieler[new_id].id = new_id;
-		strncpy(spieler[new_id].name, name, PLAYER_NAME_LENGTH);
-		spieler[new_id].sockDesc = sock;
+		int new_id = 0;
+		while(is_free[new_id] == 0)
+			++new_id;
+
+		spieler[current_count_user].id = new_id;
+		strncpy(spieler[current_count_user].name, name, PLAYER_NAME_LENGTH);
+		spieler[current_count_user].sockDesc = sock;
 		// gebe Spieler-ID zurueck
 		return new_id;
 	}
@@ -110,26 +121,17 @@ int removePlayer(int client_id){
 
 	// setze Werte auf Standardwerte zurueck
 
-	spieler[i].id = -1;
-
-/*
-	spieler[i].name[0] = '\0';
-	spieler[i].sockDesc = 0;
-	spieler[i].score = 0;
-	spieler[i].GameOver = 0;
-*/
 
 	// gehe Spielerliste durch und setze geloeschten / default Spieler an letzte Stelle von Array
-	while(i < current_user_count){
-		PLAYER temp = spieler[i];
+	while(i < MAX_PLAYERS-1){
 		spieler[i] = spieler[i+1];
-		spieler[i+1] = temp;
 		i++;
 
 	}
+	spieler[MAX_PLAYERS-1].id = -1;
 
 	// aktualisiere Spielstand / Rangfolge
-	setPlayerRanking();
+	//setPlayerRanking();
 	//sende PlayerList an alle Spieler
 	sendPlayerList();
 	return 0;
@@ -193,12 +195,12 @@ int countUser(){
 	int current_user_count = 0;
 	for(int i=0;i< MAX_PLAYERS;i++){
 		// Spieler vorhanden - erhoehe Zaehler
-		if((spieler[i].id != -1) && (spieler[i].sockDesc != 0)){
+		if(spieler[i].id != -1){
 			current_user_count++;
 		}
 	}
 	// gebe Anzahl an Spielern zurueck
-	anzahlUser = current_user_count;
+	//anzahlUser = current_user_count;
 	return current_user_count;
 }
 

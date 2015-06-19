@@ -33,6 +33,7 @@
 #define RFC_QUESTIONRESULT     			  11 // Auswertung einer Antwort auf eine Quiz-Frage
 #define RFC_GAMEOVER             					12 // Alle Clients sind fertig, Mitteilung ueber Endplatzierung
 #define RFC_ERRORWARNING      		   255 // Fehlermeldung
+#define RFC_CONNECTION_CLOSED          254 // Client beendet sich, nicht RFC konform (interne Regelung)
 
 #define ERR_WARNING 0
 #define ERR_FATAL 1

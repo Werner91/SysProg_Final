@@ -111,7 +111,18 @@ void* login_main(int sock){
                     if(response.header.type != RFC_ERRORWARNING){
                         // uebergebe Client-ID an Client-Thread
                         infoPrint("Erstelle Client-Thread");
-                        pthread_create(&client_threads[client_id], NULL, (void *) &client_thread_main, &client_id);
+                        int *client_id_ptr = malloc(sizeof (int));
+                        if(client_id_ptr == NULL)		//if((client_id_ptr = malloc(sizeof(int))) == NULL)
+                        {
+                        	//ERROR
+                        }
+                        else
+                        {
+                        	*client_id_ptr = client_id;
+                        	if(pthread_create(&client_threads[client_id], NULL, (void *) &client_thread_main, client_id_ptr) == -1){
+                        		free(client_id_ptr);
+                        	}
+                        }
                     }
 
 					// sende Antwort

@@ -28,7 +28,7 @@
 #include <stdio.h>
 
 
-void *client_thread_main(int* client_id){
+void *client_thread_main(int* client_id_ptr){
 
 	// Variablen fuer Spielablauf
 	Question* shmQ;
@@ -38,10 +38,12 @@ void *client_thread_main(int* client_id){
 	uint8_t selection = 5; // vom Spieler gewaehlte Antwort
 	bool time_error = false; // Flag ob ein Fehler bei der Restzeitberechnung auftrat
 
+	int client_id = *client_id_ptr;
+	free(client_id_ptr);
 	// hole Spielerinformationen
 	PLAYER spieler;
 	lock_user_mutex();
-	spieler = getUser(*client_id);
+	spieler = getUser(client_id);
 	unlock_user_mutex();
 
 	// ist der Spieler Spielleiter
@@ -63,6 +65,15 @@ void *client_thread_main(int* client_id){
 		// empfange
 		else {
 			packet = recvPacket(spieler.sockDesc);
+			if(packet.content.error.subtype == RFC_CONNECTION_CLOSED){
+				lock_user_mutex();
+				removePlayer(client_id);
+				sendPlayerList();
+				unlock_user_mutex();
+
+				pthread_exit(NULL);
+
+			}
 		}
         infoPrint("clientthread packet: %d", packet.header.type);
 
@@ -174,8 +185,8 @@ void *client_thread_main(int* client_id){
 						char catalog[CATALOG_NAME_LENGTH];
 
 						// lade Fragen des aktiven Katalogs
-						strncpy(catalog, packet.content.catalogname, ntohs(strlen(packet.content.catalogname)));
-						//catalog[ntohs(strlen(packet.content.catalogname))] = '\0';
+						strncpy(catalog, packet.content.catalogname, strlen(packet.content.catalogname));
+						catalog[CATALOG_NAME_LENGTH] = '\0';
 						loadQuestions(catalog);
 
 						// sende Paket mit aktuellem Katalog an alle Spieler

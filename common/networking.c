@@ -37,7 +37,7 @@ void sendPacket(PACKET packet, int socketDeskriptor) {
 
 	if (send(socketDeskriptor, &packet, packetLength, 0) == -1) {
 		errorPrint("Senden der Daten fehlgeschlagen!");
-		exit(0);
+		//exit(0);
 
 	} else {
 		// Testweise ausgeben welcher Typ an welchen Socket versendet wurde
@@ -66,6 +66,12 @@ PACKET recvPacket(int socketDeskriptor) {
 		packet.header.length = htons(strlen("Fehlerhafte uebertragung der Daten, Verbindung unterbrochen!") + 1);
 		return packet;
 		exit(0);
+		/*
+	}else if(recv_bytes == 0){
+		packet.header.type = RFC_ERRORWARNING;
+		packet.content.error.subtype = ERR_FATAL;
+		strncpy(packet.content.error.errormessage, "Client wurde beendet", strlen("Client wurde beendet"));
+	*/
 	}
 
 	packetLength = ntohs(packet.header.length);
