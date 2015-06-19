@@ -115,6 +115,11 @@ void* login_main(int sock){
                         if(client_id_ptr == NULL)		//if((client_id_ptr = malloc(sizeof(int))) == NULL)
                         {
                         	//ERROR
+                        	errorPrint("Maximale Anzahl an Spielern erreicht!");
+                        	response.header.type = RFC_ERRORWARNING;
+                      		response.header.length = htons(strlen("Speicherreservierung fuer ClientID fehlgeschlagen!"));
+                      		response.content.error.subtype = ERR_FATAL;
+                       		strncpy(response.content.error.errormessage, "Speicherreservierung fuer ClientID fehlgeschlagen!", strlen("Speicherreservierung fuer ClientID fehlgeschlagen!"));
                         }
                         else
                         {
