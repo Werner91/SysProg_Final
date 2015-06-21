@@ -83,7 +83,7 @@ void *client_thread_main(int* client_id_ptr){
 				// pruefe Subtyp
 				// Spieler hat das Spiel verlassen
 
-				if(packet.header.type == ERR_WARNING){
+				if(packet.header.type == RFC_ERRORWARNING){
 					debugPrint("Spieler %s (ID: %d) hat das Spiel verlassen", spieler.name, spieler.id);
 					// pruefe ob Spielleiter
 					if(is_spielleiter){
