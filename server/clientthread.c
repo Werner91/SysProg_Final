@@ -181,7 +181,7 @@ void *client_thread_main(int* client_id_ptr){
 					// genug Spieler - Spiel wird gestartet
 					else {
 						setGameRunning();
-						char catalog[CATALOG_NAME_LENGTH];
+						char catalog[CATALOG_NAME_LENGTH] = {};
 
 						// lade Fragen des aktiven Katalogs
 						strncpy(catalog, packet.content.catalogname, strlen(packet.content.catalogname));
@@ -212,11 +212,11 @@ void *client_thread_main(int* client_id_ptr){
 						QuestionMessage quest_message;
 
 						// kopiere Frage + Antworten + Timeout
-						strncpy(quest_message.question, shmQ->question, strlen(shmQ->question));
-						strncpy(quest_message.answers[0], shmQ->answers[0], strlen(shmQ->answers[0]));
-						strncpy(quest_message.answers[1], shmQ->answers[1], strlen(shmQ->answers[1]));
-						strncpy(quest_message.answers[2], shmQ->answers[2], strlen(shmQ->answers[2]));
-						strncpy(quest_message.answers[3], shmQ->answers[3], strlen(shmQ->answers[3]));
+						strncpy(quest_message.question, shmQ->question, sizeof(shmQ->question));
+						strncpy(quest_message.answers[0], shmQ->answers[0], sizeof(shmQ->answers[0]));
+						strncpy(quest_message.answers[1], shmQ->answers[1], sizeof(shmQ->answers[1]));
+						strncpy(quest_message.answers[2], shmQ->answers[2], sizeof(shmQ->answers[2]));
+						strncpy(quest_message.answers[3], shmQ->answers[3], sizeof(shmQ->answers[3]));
 						quest_message.timeout = shmQ->timeout;
 
 						// versende Fragenpaket + aktualisierte Spielerliste
