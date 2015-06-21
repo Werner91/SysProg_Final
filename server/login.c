@@ -86,9 +86,9 @@ void* login_main(int sock){
 					if(client_id == -1){
 						errorPrint("Name bereits vorhanden");
 						response.header.type = RFC_ERRORWARNING;
-						response.header.length = htons(strlen("Name bereits vorhanden") + 1);
+						response.header.length = htons(strlen("Name bereits vorhanden!") + 1);
 						response.content.error.subtype = ERR_FATAL;
-						strncpy(response.content.error.errormessage, "Name bereits vorhanden", strlen("Name bereits vorhanden"));
+						strncpy(response.content.error.errormessage, "Name bereits vorhanden!", strlen("Name bereits vorhanden!"));
 					}
 					// Zu viele Spieler angemeldet
 					else if(client_id >= MAX_PLAYERS){
@@ -140,9 +140,9 @@ void* login_main(int sock){
 				else {
 					errorPrint("Spiel laeuft bereits, Client kann nicht angemeldet werden");
 					response.header.type = RFC_ERRORWARNING;
-					response.header.length = htons(strlen("Spiel laeuft bereits, Client kann nicht angemeldet werden") + 1);
+					response.header.length = htons(strlen("Spiel laeuft bereits, Client kann nicht angemeldet werden!") + 1);
 					response.content.error.subtype = ERR_FATAL;
-					strncpy(response.content.error.errormessage, "Spiel laeuft bereits, Client kann nicht angemeldet werden", strlen("Spiel laeuft bereits, Client kann nicht angemeldet werden"));
+					strncpy(response.content.error.errormessage, "Spiel laeuft bereits, Client kann nicht angemeldet werden!", strlen("Spiel laeuft bereits, Client kann nicht angemeldet werden!"));
 					// sende Antwort
 					sendPacket(response, client_socket);
 				}

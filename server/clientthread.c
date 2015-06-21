@@ -130,9 +130,9 @@ void *client_thread_main(int* client_id_ptr){
 							// zu wenig Spieler
 							//char error_message2[] = "Zu wenig Spieler, breche Spiel ab.";
 							response.header.type = RFC_ERRORWARNING;
-							response.header.length = htons(strlen("Zu wenig Spieler, breche Spiel ab.") + 1);
+							response.header.length = htons(strlen("Zu wenig Spieler, breche Spiel ab!") + 1);
 							response.content.error.subtype = ERR_FATAL;
-							strncpy(response.content.error.errormessage, "Zu wenig Spieler, breche Spiel ab.", strlen("Zu wenig Spieler, breche Spiel ab.")+1);
+							strncpy(response.content.error.errormessage, "Zu wenig Spieler, breche Spiel ab!", strlen("Zu wenig Spieler, breche Spiel ab!")+1);
 							// sende Fehlermeldung an alle
 							lock_user_mutex();
 							sendToAll(response);
