@@ -52,8 +52,10 @@ void sendPacket(PACKET packet, int socketDeskriptor) {
 PACKET recvPacket(int socketDeskriptor) {
 
 	PACKET packet;
+	PACKET errorPacket;
 	int recv_bytes = 0;
 	int packetLength = 0;
+	int type;
 
 	if ((recv_bytes = recv(socketDeskriptor, &packet.header, sizeof(HEADER), MSG_WAITALL))
 			== -1) {
@@ -65,14 +67,21 @@ PACKET recvPacket(int socketDeskriptor) {
 		strncpy(packet.content.error.errormessage, "Fehlerhafte uebertragung der Daten, Verbindung unterbrochen!", strlen("Fehlerhafte uebertragung der Daten, Verbindung unterbrochen!"));
 		packet.header.length = htons(strlen("Fehlerhafte uebertragung der Daten, Verbindung unterbrochen!") + 1);
 		return packet;
-		exit(0);
-		/*
-	}else if(recv_bytes == 0){
-		packet.header.type = RFC_ERRORWARNING;
-		packet.content.error.subtype = ERR_FATAL;
-		strncpy(packet.content.error.errormessage, "Client wurde beendet", strlen("Client wurde beendet"));
-	*/
 	}
+/*
+	if(packet.header.type == 4){
+		printf("\n\n%d\n\n", recv_bytes);
+	}
+	*/
+
+	if(recv_bytes == 0){
+		errorPacket.header.type = RFC_CONNECTION_CLOSED;
+		errorPacket.header.length = htons(strlen("Client wurde beendet") +1);
+		errorPacket.content.error.subtype = ERR_FATAL;
+		strncpy(errorPacket.content.error.errormessage, "Client wurde beendet", strlen("Client wurde beendet"));
+		return errorPacket;
+	}
+
 
 	packetLength = ntohs(packet.header.length);
 	infoPrint("packetLength: %i", packetLength);

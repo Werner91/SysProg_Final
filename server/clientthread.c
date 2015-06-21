@@ -65,10 +65,9 @@ void *client_thread_main(int* client_id_ptr){
 		// empfange
 		else {
 			packet = recvPacket(spieler.sockDesc);
-			if(packet.content.error.subtype == RFC_CONNECTION_CLOSED){
+			if(packet.header.type == RFC_CONNECTION_CLOSED){
 				lock_user_mutex();
 				removePlayer(client_id);
-				sendPlayerList();
 				unlock_user_mutex();
 
 				pthread_exit(NULL);

@@ -42,8 +42,17 @@ void receiveCatalogList(PACKET _packet) {
     // Antwort auswerten und anzeigen
     if(ntohs(_packet.header.length) > 0){
         infoPrint("%s", _packet.content.catalogname);
-    	char buffer_array[strlen(_packet.content.catalogname)];
-	    strncpy(buffer_array, _packet.content.catalogname, CATALOG_NAME_LENGTH);
+    	//char buffer_array[strlen(_packet.content.catalogname)];
+        char buffer_array[CATALOG_NAME_LENGTH] = {};
+        for(int i = 0; i < CATALOG_NAME_LENGTH; i++){
+        	buffer_array[i] = _packet.content.catalogname[i];
+        	if(i > 3){
+        		if((buffer_array[i-2] == 'c') && (buffer_array[i-1] == 'a') && (buffer_array[i] == 't')){
+        			i = CATALOG_NAME_LENGTH;
+        		}
+        	}
+        }
+	    //strncpy(buffer_array, _packet.content.catalogname, CATALOG_NAME_LENGTH);
 	    buffer_array[CATALOG_NAME_LENGTH-1] = '\0';
 	    preparation_addCatalog(buffer_array);
     }
