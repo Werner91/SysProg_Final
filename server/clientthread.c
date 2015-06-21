@@ -110,7 +110,7 @@ void *client_thread_main(int* client_id_ptr){
 						removePlayer(spieler.id);
 						unlock_user_mutex();
 						// pruefe ob Spiel bereits laeft und Anzahl verbliebener Spieler
-						if((getGameRunning()) && (countUser() <= 2)){
+						if((getGameRunning()) && (countUser() > 2)){
 							// zu wenig Spieler
 							//char error_message2[] = "Zu wenig Spieler, breche Spiel ab.";
 							response.header.type = RFC_ERRORWARNING;
