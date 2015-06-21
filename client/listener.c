@@ -141,11 +141,17 @@ void receivePlayerlist(PACKET _packet){
  * Funktion wertet Fehlernachrichten aus
  */
 int receiveErrorMessage (PACKET _packet){
-	char error_message[MAX_MESSAGE_LENGTH];
+	char error_message[MAX_MESSAGE_LENGTH] = {};
 	// hole Errornachricht
-	strncpy (error_message, _packet.content.error.errormessage, strlen(_packet.content.error.errormessage));
+	//strncpy (error_message, _packet.content.error.errormessage, MAX_MESSAGE_LENGTH);
+	for(int i = 0; i < MAX_MESSAGE_LENGTH; i++){
+		error_message[i] = _packet.content.error.errormessage[i];
+		if(_packet.content.error.errormessage[i] == '!'){
+			i = MAX_MESSAGE_LENGTH;
+		}
+	}
 	// Nullterminierung
-	error_message[strlen(_packet.content.error.errormessage)]= '\0';
+	error_message[MAX_MESSAGE_LENGTH-1]= '\0';
 	// zeige Errordialog + gebe Fehler auf Konsole aus
 	// beende Client falls fataler Error
 	if(_packet.content.error.subtype == ERR_FATAL){
@@ -153,14 +159,15 @@ int receiveErrorMessage (PACKET _packet){
 		return 1; //Der Rückgabewert 1 Beendet die Endlosschleife in der listener_main
 	/*} else if (_packet.content.error.subtype == ERR_FATAL) {
 		guiShowErrorDialog(error_message, 1); // GUI wird beendet und Dialogbox für fehler ausgegeben
-		*/
 		return 1; //Der Rückgabewert 1 Beendet die Endlosschleife in der listener_main
+		*/
 	} else if ((_packet.content.error.subtype == ERR_FATAL) && game_is_running) {
 		guiShowMessageDialog(error_message, 0);
 	}
 
 	return 0;
 }
+
 
 
 
