@@ -286,7 +286,7 @@ void sendGameOver(int id){
 		for(int j=0;j<countUser();j++){
 			PACKET packet;
 			packet.header.type = RFC_GAMEOVER;
-			packet.header.length = htons(sizeof(HEADER) + 1);
+			packet.header.length = htons(1);
 			packet.content.playerrank = j + 1;
 			sendPacket(packet, spieler[j].sockDesc);
 		}
